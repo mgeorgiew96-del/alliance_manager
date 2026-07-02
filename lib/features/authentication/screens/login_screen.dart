@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 import '../../../theme/am_spacing.dart';
@@ -47,7 +48,7 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: AMSpacing.xl),
 
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {context.go('/dashboard');},
               child: const Text('Sign In'),
             ),
 
