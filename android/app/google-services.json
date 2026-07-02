@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "813649726481",
+    "project_id": "alliance-manager-app",
+    "storage_bucket": "alliance-manager-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:813649726481:android:fac19e19c578239e4c35b0",
+        "android_client_info": {
+          "package_name": "com.example.alliance_manager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrsudZB60iIGWdbKjqBNJzGNFWWNKpefo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
