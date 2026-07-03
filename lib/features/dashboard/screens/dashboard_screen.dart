@@ -77,7 +77,7 @@ class _DashboardCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AMColors.surfaceLight,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AMColors.goldDark.withOpacity(0.5)),
+        border: Border.all(  color: AMColors.goldDark.withValues(alpha: 0.5),),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
