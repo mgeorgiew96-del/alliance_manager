@@ -1,0 +1,7 @@
+enum MemberRank {
+  r5,
+  r4,
+  r3,
+  r2,
+  r1,
+}
