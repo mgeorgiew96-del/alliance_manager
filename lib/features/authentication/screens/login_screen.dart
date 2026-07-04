@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/services/service_locator.dart';
 import '../../../shared/theme/am_colors.dart';
 import '../../../shared/theme/am_text_styles.dart';
 import '../../../shared/widgets/am_card.dart';
@@ -30,15 +31,27 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _login() {
+  Future<void> _login() async {
     final amId = _amIdController.text.trim();
     final password = _passwordController.text.trim();
 
     if (amId.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Enter AM ID and password.'),
-        ),
+        const SnackBar(content: Text('Enter AM ID and password.')),
+      );
+      return;
+    }
+
+    final result = await authService.login(
+      amId: amId,
+      password: password,
+    );
+
+    if (!mounted) return;
+
+    if (result == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid AM ID or password.')),
       );
       return;
     }
