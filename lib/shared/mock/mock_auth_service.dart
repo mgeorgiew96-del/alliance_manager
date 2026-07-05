@@ -3,15 +3,18 @@ import '../models/member_model.dart';
 import '../repositories/account_repository.dart';
 import '../repositories/member_repository.dart';
 import '../services/auth_service.dart';
+import '../services/session_service.dart';
 
 class MockAuthService implements AuthService {
   MockAuthService({
     required this.accountRepository,
     required this.memberRepository,
-  });
+    SessionService? sessionService,
+  }) : _sessionService = sessionService ?? SessionService();
 
   final AccountRepository accountRepository;
   final MemberRepository memberRepository;
+  final SessionService _sessionService;
 
   AccountModel? _currentAccount;
   MemberModel? _currentMember;
@@ -27,8 +30,6 @@ class MockAuthService implements AuthService {
       return null;
     }
 
-    // Temporary mock password check.
-    // Later this will become a secure password hash check.
     if (password != account.passwordHash) {
       return null;
     }
@@ -42,6 +43,11 @@ class MockAuthService implements AuthService {
     _currentAccount = account;
     _currentMember = member;
 
+    _sessionService.startSession(
+      account: account,
+      member: member,
+    );
+
     return (account, member);
   }
 
@@ -49,6 +55,8 @@ class MockAuthService implements AuthService {
   Future<void> logout() async {
     _currentAccount = null;
     _currentMember = null;
+
+    _sessionService.clearSession();
   }
 
   @override

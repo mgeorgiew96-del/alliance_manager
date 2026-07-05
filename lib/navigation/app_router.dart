@@ -1,10 +1,12 @@
 import 'package:go_router/go_router.dart';
 
-import '../features/welcome/screens/welcome_screen.dart';
-import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/create_account_request_screen.dart';
+import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/waiting_approval_screen.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
+import '../features/member_profile/screens/member_profile_screen.dart';
+import '../features/members/screens/members_screen.dart';
+import '../features/welcome/screens/welcome_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -28,6 +30,17 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/dashboard',
       builder: (context, state) => const DashboardScreen(),
+    ),
+    GoRoute(
+      path: '/members',
+      builder: (context, state) => const MembersScreen(),
+    ),
+    GoRoute(
+      path: '/member/:amId',
+      builder: (context, state) {
+        final amId = state.pathParameters['amId']!;
+        return MemberProfileScreen(amId: amId);
+      },
     ),
   ],
 );

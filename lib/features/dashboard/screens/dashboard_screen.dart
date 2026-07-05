@@ -1,60 +1,154 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../theme/am_colors.dart';
-import '../../../theme/am_spacing.dart';
-import '../../../theme/am_typography.dart';
+import '../../../shared/enums/member_rank.dart';
+import '../../../shared/enums/troop_type.dart';
+import '../../../shared/services/service_locator.dart';
+import '../../../shared/theme/am_spacing.dart';
+import '../../../shared/theme/am_text_styles.dart';
+import '../../../shared/widgets/am_card.dart';
+import '../../../shared/widgets/am_page.dart';
+import '../../../shared/widgets/am_primary_button.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
+  String _rankLabel(MemberRank rank) {
+    switch (rank) {
+      case MemberRank.r5:
+        return 'R5';
+      case MemberRank.r4:
+        return 'R4';
+      case MemberRank.r3:
+        return 'R3';
+      case MemberRank.r2:
+        return 'R2';
+      case MemberRank.r1:
+        return 'R1';
+    }
+  }
+
+  String _troopLabel(TroopType troop) {
+    switch (troop) {
+      case TroopType.infantry:
+        return 'Infantry';
+      case TroopType.cavalry:
+        return 'Cavalry';
+      case TroopType.archer:
+        return 'Archer';
+      case TroopType.mage:
+        return 'Mage';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AMSpacing.md),
+    final member = sessionService.member;
+
+    if (member == null) {
+      return AMPage(
+        child: AMCard(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: const [
-              _AllianceBanner(),
-              SizedBox(height: AMSpacing.md),
-              _DashboardCard(title: 'Daily Brief', content: 'No urgent updates today.'),
-              SizedBox(height: AMSpacing.md),
-              _DashboardCard(title: 'Alliance Snapshot', content: 'Members: 0\nProgress: 0%\nHealth: Stable'),
-              SizedBox(height: AMSpacing.md),
-              _DashboardCard(title: 'Upcoming Events', content: 'No events scheduled.'),
-              SizedBox(height: AMSpacing.md),
-              _DashboardCard(title: 'Quick Actions', content: 'Members • Events • Reports'),
-              SizedBox(height: AMSpacing.md),
-              _DashboardCard(title: 'Notifications', content: 'No new notifications.'),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'No active session',
+                style: AMTextStyles.title,
+              ),
+              const SizedBox(height: AMSpacing.md),
+              AMPrimaryButton(
+                text: 'BACK TO LOGIN',
+                onPressed: () => context.go('/login'),
+              ),
             ],
           ),
         ),
+      );
+    }
+
+    return AMPage(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AMCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome back, ${member.playerName}',
+                  style: AMTextStyles.title,
+                ),
+                const SizedBox(height: AMSpacing.sm),
+                Text(
+                  '${_rankLabel(member.rank)} • APX • Realm ${member.realmId}',
+                  style: AMTextStyles.subtitle,
+                ),
+                const SizedBox(height: AMSpacing.lg),
+                _InfoRow(label: 'AM ID', value: member.amId),
+                _InfoRow(
+                  label: 'Castle Level',
+                  value: member.castleLevel.toString(),
+                ),
+                _InfoRow(
+                  label: 'Frontline',
+                  value: _troopLabel(member.frontlineTroop),
+                ),
+                _InfoRow(
+                  label: 'Backline',
+                  value: _troopLabel(member.backlineTroop),
+                ),
+                _InfoRow(
+                  label: 'Overall Progress',
+                  value: '${member.overallProgress.toStringAsFixed(1)}%',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AMSpacing.md),
+          const _DashboardCard(
+            title: 'Alliance Snapshot',
+            content: 'Members: 1 / 100\nPending requests: 0\nHealth: Stable',
+          ),
+          const SizedBox(height: AMSpacing.md),
+          const _DashboardCard(
+            title: 'Quick Actions',
+            content: 'Members • Beast • Equipment • Titan • Statistics',
+          ),
+          const SizedBox(height: AMSpacing.md),
+          const _DashboardCard(
+            title: 'Notifications',
+            content: 'No new notifications.',
+          ),
+          const SizedBox(height: AMSpacing.lg),
+          AMPrimaryButton(
+            text: 'MEMBERS',
+            icon: Icons.people,
+            onPressed: () => context.go('/members'),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _AllianceBanner extends StatelessWidget {
-  const _AllianceBanner();
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AMSpacing.lg),
-      decoration: BoxDecoration(
-        color: AMColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AMColors.goldDark),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text('APX Apex Predators', style: AMTypography.title),
-          SizedBox(height: AMSpacing.sm),
-          Text('Realm 1360', style: AMTypography.subtitle),
-          SizedBox(height: AMSpacing.md),
-          Text('Welcome back, aHTu.', style: AMTypography.body),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AMSpacing.sm),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: AMTextStyles.subtitle),
+          Text(value, style: AMTextStyles.body),
         ],
       ),
     );
@@ -62,29 +156,24 @@ class _AllianceBanner extends StatelessWidget {
 }
 
 class _DashboardCard extends StatelessWidget {
-  final String title;
-  final String content;
-
   const _DashboardCard({
     required this.title,
     required this.content,
   });
 
+  final String title;
+  final String content;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AMCard(
       padding: const EdgeInsets.all(AMSpacing.md),
-      decoration: BoxDecoration(
-        color: AMColors.surfaceLight,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(  color: AMColors.goldDark.withValues(alpha: 0.5),),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AMTypography.subtitle),
+          Text(title, style: AMTextStyles.subtitle),
           const SizedBox(height: AMSpacing.sm),
-          Text(content, style: AMTypography.body),
+          Text(content, style: AMTextStyles.body),
         ],
       ),
     );
