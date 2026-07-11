@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/beast_state.dart';
+import '../models/beast_type.dart';
 import '../providers/beast_repository_provider.dart';
 import '../repositories/beast_repository.dart';
 
@@ -10,15 +11,87 @@ class BeastController extends AsyncNotifier<BeastState> {
   @override
   Future<BeastState> build() async {
     _repository = ref.read(beastRepositoryProvider);
-
-    return _repository.loadBeastState(
-      amId: 'AM-1360-001',
-    );
+    return _repository.loadBeastState(amId: 'AM-1360-001');
   }
 
   BeastState? get _currentState {
-    return state.whenOrNull(
-      data: (data) => data,
+    return state.whenOrNull(data: (data) => data);
+  }
+
+  void selectBeast(BeastType beastType) {
+    final currentState = _currentState;
+    if (currentState == null) return;
+
+    state = AsyncData(
+      currentState.copyWith(
+        selectedBeast: beastType,
+        hasUnsavedChanges: true,
+      ),
+    );
+  }
+
+  void increaseBeastLevel() {
+    final currentState = _currentState;
+    if (currentState == null || currentState.beastLevel >= 40) return;
+
+    state = AsyncData(
+      currentState.copyWith(
+        beastLevel: currentState.beastLevel + 1,
+        hasUnsavedChanges: true,
+      ),
+    );
+  }
+
+  void decreaseBeastLevel() {
+    final currentState = _currentState;
+    if (currentState == null || currentState.beastLevel <= 1) return;
+
+    state = AsyncData(
+      currentState.copyWith(
+        beastLevel: currentState.beastLevel - 1,
+        hasUnsavedChanges: true,
+      ),
+    );
+  }
+
+  void increaseSkill({
+    required String skillId,
+    required int maxLevel,
+  }) {
+    final currentState = _currentState;
+    if (currentState == null) return;
+
+    final currentLevel = currentState.skillLevels[skillId] ?? 1;
+    if (currentLevel >= maxLevel) return;
+
+    final updatedLevels = Map<String, int>.from(currentState.skillLevels);
+    updatedLevels[skillId] = currentLevel + 1;
+
+    state = AsyncData(
+      currentState.copyWith(
+        skillLevels: updatedLevels,
+        hasUnsavedChanges: true,
+      ),
+    );
+  }
+
+  void decreaseSkill({
+    required String skillId,
+  }) {
+    final currentState = _currentState;
+    if (currentState == null) return;
+
+    final currentLevel = currentState.skillLevels[skillId] ?? 1;
+    if (currentLevel <= 1) return;
+
+    final updatedLevels = Map<String, int>.from(currentState.skillLevels);
+    updatedLevels[skillId] = currentLevel - 1;
+
+    state = AsyncData(
+      currentState.copyWith(
+        skillLevels: updatedLevels,
+        hasUnsavedChanges: true,
+      ),
     );
   }
 
@@ -27,17 +100,12 @@ class BeastController extends AsyncNotifier<BeastState> {
     required int maxLevel,
   }) {
     final currentState = _currentState;
-
     if (currentState == null) return;
 
     final currentLevel = currentState.talentLevels[talentId] ?? 0;
-
     if (currentLevel >= maxLevel) return;
 
-    final updatedLevels = Map<String, int>.from(
-      currentState.talentLevels,
-    );
-
+    final updatedLevels = Map<String, int>.from(currentState.talentLevels);
     updatedLevels[talentId] = currentLevel + 1;
 
     state = AsyncData(
@@ -48,21 +116,14 @@ class BeastController extends AsyncNotifier<BeastState> {
     );
   }
 
-  void decreaseTalent({
-    required String talentId,
-  }) {
+  void decreaseTalent({required String talentId}) {
     final currentState = _currentState;
-
     if (currentState == null) return;
 
     final currentLevel = currentState.talentLevels[talentId] ?? 0;
-
     if (currentLevel <= 0) return;
 
-    final updatedLevels = Map<String, int>.from(
-      currentState.talentLevels,
-    );
-
+    final updatedLevels = Map<String, int>.from(currentState.talentLevels);
     updatedLevels[talentId] = currentLevel - 1;
 
     state = AsyncData(
@@ -73,9 +134,47 @@ class BeastController extends AsyncNotifier<BeastState> {
     );
   }
 
+  void increaseSkin({
+    required String skinId,
+    required int maxLevel,
+  }) {
+    final currentState = _currentState;
+    if (currentState == null) return;
+
+    final currentLevel = currentState.skinLevels[skinId] ?? 0;
+    if (currentLevel >= maxLevel) return;
+
+    final updatedLevels = Map<String, int>.from(currentState.skinLevels);
+    updatedLevels[skinId] = currentLevel + 1;
+
+    state = AsyncData(
+      currentState.copyWith(
+        skinLevels: updatedLevels,
+        hasUnsavedChanges: true,
+      ),
+    );
+  }
+
+  void decreaseSkin({required String skinId}) {
+    final currentState = _currentState;
+    if (currentState == null) return;
+
+    final currentLevel = currentState.skinLevels[skinId] ?? 0;
+    if (currentLevel <= 0) return;
+
+    final updatedLevels = Map<String, int>.from(currentState.skinLevels);
+    updatedLevels[skinId] = currentLevel - 1;
+
+    state = AsyncData(
+      currentState.copyWith(
+        skinLevels: updatedLevels,
+        hasUnsavedChanges: true,
+      ),
+    );
+  }
+
   Future<void> save() async {
     final currentState = _currentState;
-
     if (currentState == null) return;
 
     final savedState = currentState.copyWith(
@@ -92,14 +191,10 @@ class BeastController extends AsyncNotifier<BeastState> {
   }
 
   Future<void> cancel() async {
-    final savedState = await _repository.loadBeastState(
-      amId: 'AM-1360-001',
-    );
+    final savedState = await _repository.loadBeastState(amId: 'AM-1360-001');
 
     state = AsyncData(
-      savedState.copyWith(
-        hasUnsavedChanges: false,
-      ),
+      savedState.copyWith(hasUnsavedChanges: false),
     );
   }
 }

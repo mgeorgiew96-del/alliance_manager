@@ -11,6 +11,7 @@ import '../features/members/screens/members_screen.dart';
 import '../features/welcome/screens/welcome_screen.dart';
 import '../features/beast/screens/beast_talents_screen.dart';
 import '../features/beast/models/beast_type.dart';
+import '../../features/beast/screens/beast_skins_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -66,9 +67,16 @@ final GoRouter appRouter = GoRouter(
     final beastTypeName = state.pathParameters['beastType']!;
     final beastType = BeastType.values.firstWhere(
       (type) => type.name == beastTypeName,
-    );
+    );     return BeastTalentsScreen(beastType: beastType);
+  },
+),
+      GoRoute(
+       path: '/member/:amId/beast/skins', builder: (context, state) {
+    final amId = state.pathParameters['amId']!;
 
-    return BeastTalentsScreen(beastType: beastType);
+    return BeastSkinsScreen(
+      amId: amId,
+    );
   },
 ),
   ],
