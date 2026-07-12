@@ -1,8 +1,8 @@
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../theme/am_typography.dart';
 import '../../../theme/am_spacing.dart';
+import '../../../theme/am_typography.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -13,53 +13,57 @@ class WelcomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AMSpacing.lg),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Spacer(),
-
-                const Text(
-                  'Alliance Manager',
-                  style: AMTypography.title,
+          child: Column(
+            children: [
+              const Spacer(),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.asset(
+                  'assets/images/logo/alliance_manager_logo.webp',
+                  width: 300,
+                  height: 300,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 300,
+                      height: 300,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: const Icon(
+                        Icons.shield,
+                        size: 110,
+                        color: Colors.amber,
+                      ),
+                    );
+                  },
                 ),
-
-                const SizedBox(height: AMSpacing.md),
-
-                const Text(
-                  'Built by Players.\nDesigned for Alliances.',
-                  textAlign: TextAlign.center,
-                  style: AMTypography.subtitle,
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.go('/login');
+                  },
+                  child: const Text('SIGN IN'),
                 ),
-
-                const Spacer(),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {context.go('/login');},
-                    child: const Text('Sign In'),
-                  ),
-                ),
-
-                const SizedBox(height: AMSpacing.md),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    child: const Text('Create Alliance'),
-                  ),
-                ),
-
-                const SizedBox(height: AMSpacing.xl),
-
-                const Text(
-                  'Version 0.0.1 Alpha',
-                  style: AMTypography.small,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: AMSpacing.xl),
+              const Text(
+                'Version 1.0.0',
+                style: AMTypography.small,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AMSpacing.xs),
+              const Text(
+                'APX Edition (Alpha)',
+                style: AMTypography.small,
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         ),
       ),
