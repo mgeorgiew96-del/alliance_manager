@@ -24,6 +24,7 @@ class BeastPrioritiesScreen extends ConsumerStatefulWidget {
 
 class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
   int _selectedTabIndex = 0;
+  BeastType _selectedTalentBeast = BeastType.panda;
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +102,17 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
         return const _SkillsPrioritiesSection();
 
       case 1:
-        return const _TalentsPlaceholder();
+        return _TalentsPrioritiesSection(
+          selectedBeast: _selectedTalentBeast,
+          onBeastSelected: (beastType) {
+            setState(() {
+              _selectedTalentBeast = beastType;
+            });
+          },
+        );
 
       case 2:
-        return const _SkinsPlaceholder();
+        return const _SkinsPrioritiesSection();
 
       default:
         return const _SkillsPrioritiesSection();
@@ -326,94 +334,248 @@ class _SkillsPrioritiesSection extends ConsumerWidget {
   }
 }
 
-class _TalentsPlaceholder extends ConsumerWidget {
-  const _TalentsPlaceholder();
+class _TalentsPrioritiesSection extends ConsumerWidget {
+  const _TalentsPrioritiesSection({
+    required this.selectedBeast,
+    required this.onBeastSelected,
+  });
+
+  final BeastType selectedBeast;
+  final ValueChanged<BeastType> onBeastSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(beastProgressConfigProvider);
+    final controller = ref.read(beastProgressConfigProvider.notifier);
 
-    final pandaConfigs = config.talentConfigsFor(BeastType.panda);
+    final talents = talentDefinitionsForBeast(selectedBeast);
 
-    final trackedCount = pandaConfigs.values
+    final talentConfigs = config.talentConfigsFor(selectedBeast);
+
+    final trackedCount = talentConfigs.values
         .where((item) => item.isTracked)
         .length;
 
-    final totalCount = talentDefinitionsForBeast(BeastType.panda).length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AMCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.account_tree),
+                  const SizedBox(width: AMSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'TALENT PRIORITIES',
+                      style: AMTextStyles.subtitle,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AMSpacing.sm),
+              Text(
+                'Choose a Beast to configure its unique '
+                'Talent priorities.',
+                style: AMTextStyles.body,
+              ),
+              const SizedBox(height: AMSpacing.md),
+              Wrap(
+                spacing: AMSpacing.sm,
+                runSpacing: AMSpacing.sm,
+                children: BeastType.values.map((beastType) {
+                  return ChoiceChip(
+                    selected: beastType == selectedBeast,
+                    label: Text(_beastName(beastType)),
+                    onSelected: (_) {
+                      onBeastSelected(beastType);
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: AMSpacing.md),
+              Text(
+                '$trackedCount of ${talents.length} '
+                '${_beastName(selectedBeast)} talents are '
+                'currently tracked.',
+                style: AMTextStyles.body,
+              ),
+              const SizedBox(height: AMSpacing.xs),
+              Text(
+                'Each Beast keeps its own Talent priority '
+                'configuration.',
+                style: AMTextStyles.muted,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AMSpacing.md),
+        for (final talent in talents) ...[
+          Builder(
+            builder: (context) {
+              final itemConfig = talentConfigs[talent.id];
 
-    return _PlaceholderCard(
-      icon: Icons.account_tree,
-      title: 'TALENT PRIORITIES',
-      description:
-          '$trackedCount of $totalCount Panda talents are '
-          'currently tracked.',
-      message:
-          'Beast selection and editable Talent priority rows '
-          'will be connected in the next step.',
+              if (itemConfig == null) {
+                return AMCard(
+                  child: Text(
+                    'Missing progress configuration for '
+                    '${talent.name}.',
+                    style: AMTextStyles.muted,
+                  ),
+                );
+              }
+
+              return PriorityItemEditor(
+                title: talent.name,
+                isTracked: itemConfig.isTracked,
+                targetLevel: itemConfig.targetLevel,
+                minimumLevel: 0,
+                maximumLevel: talent.maxLevel,
+                priority: itemConfig.priority,
+                onTrackedChanged: (isTracked) {
+                  controller.setTalentTracked(
+                    beastType: selectedBeast,
+                    talentId: talent.id,
+                    isTracked: isTracked,
+                  );
+                },
+                onTargetLevelChanged: (targetLevel) {
+                  controller.setTalentTargetLevel(
+                    beastType: selectedBeast,
+                    talentId: talent.id,
+                    targetLevel: targetLevel,
+                  );
+                },
+                onPriorityChanged: (priority) {
+                  controller.setTalentPriority(
+                    beastType: selectedBeast,
+                    talentId: talent.id,
+                    priority: priority,
+                  );
+                },
+              );
+            },
+          ),
+          const SizedBox(height: AMSpacing.md),
+        ],
+      ],
     );
   }
 }
 
-class _SkinsPlaceholder extends ConsumerWidget {
-  const _SkinsPlaceholder();
+class _SkinsPrioritiesSection extends ConsumerWidget {
+  const _SkinsPrioritiesSection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(beastProgressConfigProvider);
+    final controller = ref.read(beastProgressConfigProvider.notifier);
 
     final trackedCount = config.skinConfigs.values
         .where((item) => item.isTracked)
         .length;
 
-    return _PlaceholderCard(
-      icon: Icons.theater_comedy,
-      title: 'SKIN PRIORITIES',
-      description:
-          '$trackedCount of ${beastSkinDefinitions.length} '
-          'skins are currently tracked.',
-      message:
-          'Editable Skin priority rows will be connected after '
-          'the Talent tab.',
-    );
-  }
-}
-
-class _PlaceholderCard extends StatelessWidget {
-  const _PlaceholderCard({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.message,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return AMCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AMCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon),
-              const SizedBox(width: AMSpacing.sm),
-              Expanded(child: Text(title, style: AMTextStyles.subtitle)),
+              Row(
+                children: [
+                  const Icon(Icons.theater_comedy),
+                  const SizedBox(width: AMSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'SKIN PRIORITIES',
+                      style: AMTextStyles.subtitle,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AMSpacing.sm),
+              Text(
+                '$trackedCount of '
+                '${beastSkinDefinitions.length} skins are '
+                'currently tracked.',
+                style: AMTextStyles.body,
+              ),
+              const SizedBox(height: AMSpacing.xs),
+              Text(
+                'Beast skins stack together. Ignored skins remain '
+                'stored but do not contribute to Beast progress.',
+                style: AMTextStyles.muted,
+              ),
             ],
           ),
+        ),
+        const SizedBox(height: AMSpacing.md),
+        for (final skin in beastSkinDefinitions) ...[
+          Builder(
+            builder: (context) {
+              final itemConfig = config.skinConfigs[skin.id];
+
+              if (itemConfig == null) {
+                return AMCard(
+                  child: Text(
+                    'Missing progress configuration for '
+                    '${skin.name}.',
+                    style: AMTextStyles.muted,
+                  ),
+                );
+              }
+
+              return PriorityItemEditor(
+                title: skin.name,
+                isTracked: itemConfig.isTracked,
+                targetLevel: itemConfig.targetLevel,
+                minimumLevel: skin.minLevel,
+                maximumLevel: skin.maxLevel,
+                priority: itemConfig.priority,
+                onTrackedChanged: (isTracked) {
+                  controller.setSkinTracked(
+                    skinId: skin.id,
+                    isTracked: isTracked,
+                  );
+                },
+                onTargetLevelChanged: (targetLevel) {
+                  controller.setSkinTargetLevel(
+                    skinId: skin.id,
+                    targetLevel: targetLevel,
+                  );
+                },
+                onPriorityChanged: (priority) {
+                  controller.setSkinPriority(
+                    skinId: skin.id,
+                    priority: priority,
+                  );
+                },
+              );
+            },
+          ),
           const SizedBox(height: AMSpacing.md),
-          Text(description, style: AMTextStyles.body),
-          const SizedBox(height: AMSpacing.sm),
-          Text(message, style: AMTextStyles.muted),
         ],
-      ),
+      ],
     );
   }
 }
 
 String _percentageText(double value) {
   return '${(value * 100).toStringAsFixed(0)}%';
+}
+
+String _beastName(BeastType beastType) {
+  switch (beastType) {
+    case BeastType.panda:
+      return 'Panda';
+    case BeastType.dragon:
+      return 'Dragon';
+    case BeastType.pegasus:
+      return 'Pegasus';
+    case BeastType.phoenix:
+      return 'Phoenix';
+  }
 }
