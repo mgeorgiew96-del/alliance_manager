@@ -17,12 +17,10 @@ import '../models/beast_progress_config.dart';
 import '../models/beast_state.dart';
 import '../models/beast_type.dart';
 import '../services/beast_progress_service.dart';
+import '../providers/beast_progress_config_provider.dart';
 
 class BeastScreen extends ConsumerWidget {
-  const BeastScreen({
-    super.key,
-    required this.amId,
-  });
+  const BeastScreen({super.key, required this.amId});
 
   final String amId;
 
@@ -31,25 +29,17 @@ class BeastScreen extends ConsumerWidget {
     final beastState = ref.watch(beastControllerProvider);
 
     return beastState.when(
-      loading: () => const AMPage(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
+      loading: () =>
+          const AMPage(child: Center(child: CircularProgressIndicator())),
       error: (error, stackTrace) => AMPage(
         child: Center(
-          child: Text(
-            'Failed to load Beast data.',
-            style: AMTextStyles.body,
-          ),
+          child: Text('Failed to load Beast data.', style: AMTextStyles.body),
         ),
       ),
       data: (state) {
-        return _BeastOverview(
-          amId: amId,
-          state: state,
-          config: BeastProgressConfig.initial(),
-        );
+        final config = ref.watch(beastProgressConfigProvider);
+
+        return _BeastOverview(amId: amId, state: state, config: config);
       },
     );
   }
@@ -78,9 +68,7 @@ class _BeastOverview extends ConsumerWidget {
 
     final adjustedLevel = state.beastLevel - _minBeastLevel;
 
-    return (adjustedLevel / availableLevels)
-        .clamp(0, 1)
-        .toDouble();
+    return (adjustedLevel / availableLevels).clamp(0, 1).toDouble();
   }
 
   double get _skillsProgress {
@@ -152,9 +140,7 @@ class _BeastOverview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.read(
-      beastControllerProvider.notifier,
-    );
+    final controller = ref.read(beastControllerProvider.notifier);
 
     return AMPage(
       child: SingleChildScrollView(
@@ -189,10 +175,7 @@ class _BeastOverview extends ConsumerWidget {
               skinsWeight: config.skinsWeight,
             ),
             const SizedBox(height: AMSpacing.md),
-            _NavigationRow(
-              amId: amId,
-              selectedBeast: state.selectedBeast,
-            ),
+            _NavigationRow(amId: amId, selectedBeast: state.selectedBeast),
             const SizedBox(height: AMSpacing.md),
             _OverviewGrid(
               state: state,
@@ -240,11 +223,7 @@ class _BeastBanner extends StatelessWidget {
                     Color.fromRGBO(0, 0, 0, 0.45),
                     Color.fromRGBO(0, 0, 0, 0.90),
                   ],
-                  stops: [
-                    0.0,
-                    0.55,
-                    1.0,
-                  ],
+                  stops: [0.0, 0.55, 1.0],
                 ),
               ),
             ),
@@ -255,10 +234,7 @@ class _BeastBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'BEAST',
-                    style: AMTextStyles.title,
-                  ),
+                  Text('BEAST', style: AMTextStyles.title),
                   const SizedBox(height: AMSpacing.xs),
                   Text(
                     'Four beasts, one bond. Unleash their true power.',
@@ -319,13 +295,9 @@ class _HeroSection extends StatelessWidget {
 
               return ChoiceChip(
                 selected: isSelected,
-                label: Text(
-                  _nameForBeast(beastType),
-                ),
+                label: Text(_nameForBeast(beastType)),
                 avatar: CircleAvatar(
-                  backgroundImage: AssetImage(
-                    _portraitPathForBeast(beastType),
-                  ),
+                  backgroundImage: AssetImage(_portraitPathForBeast(beastType)),
                 ),
                 onSelected: (_) {
                   onSelectBeast(beastType);
@@ -346,21 +318,11 @@ class _HeroSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AMSpacing.md),
-          Center(
-            child: Text(
-              selectedBeastName,
-              style: AMTextStyles.title,
-            ),
-          ),
+          Center(child: Text(selectedBeastName, style: AMTextStyles.title)),
           const SizedBox(height: AMSpacing.lg),
-          Text(
-            'Overall Beast Progress',
-            style: AMTextStyles.subtitle,
-          ),
+          Text('Overall Beast Progress', style: AMTextStyles.subtitle),
           const SizedBox(height: AMSpacing.sm),
-          AMProgressBar(
-            progress: overallProgress,
-          ),
+          AMProgressBar(progress: overallProgress),
           const SizedBox(height: AMSpacing.sm),
           Text(
             '${(overallProgress * 100).toStringAsFixed(1)}%',
@@ -375,25 +337,13 @@ class _HeroSection extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                onPressed: beastLevel > 1
-                    ? onDecreaseLevel
-                    : null,
-                icon: const Icon(
-                  Icons.remove,
-                ),
+                onPressed: beastLevel > 1 ? onDecreaseLevel : null,
+                icon: const Icon(Icons.remove),
               ),
-              Expanded(
-                child: AMProgressBar(
-                  progress: beastLevelProgress,
-                ),
-              ),
+              Expanded(child: AMProgressBar(progress: beastLevelProgress)),
               IconButton(
-                onPressed: beastLevel < maxBeastLevel
-                    ? onIncreaseLevel
-                    : null,
-                icon: const Icon(
-                  Icons.add,
-                ),
+                onPressed: beastLevel < maxBeastLevel ? onIncreaseLevel : null,
+                icon: const Icon(Icons.add),
               ),
             ],
           ),
@@ -418,10 +368,7 @@ class _HeroSection extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AMSpacing.md),
-            AMSaveCancelBar(
-              onSave: onSave,
-              onCancel: onCancel,
-            ),
+            AMSaveCancelBar(onSave: onSave, onCancel: onCancel),
           ],
         ],
       ),
@@ -454,10 +401,7 @@ class _SubProgressCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'BEAST PROGRESS SUMMARY',
-            style: AMTextStyles.subtitle,
-          ),
+          Text('BEAST PROGRESS SUMMARY', style: AMTextStyles.subtitle),
           const SizedBox(height: AMSpacing.md),
           _ProgressRow(
             label: 'Level',
@@ -503,24 +447,14 @@ class _ProgressRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: AMSpacing.md,
-      ),
+      padding: const EdgeInsets.only(bottom: AMSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  label,
-                  style: AMTextStyles.body,
-                ),
-              ),
-              Text(
-                weightLabel,
-                style: AMTextStyles.muted,
-              ),
+              Expanded(child: Text(label, style: AMTextStyles.body)),
+              Text(weightLabel, style: AMTextStyles.muted),
               const SizedBox(width: AMSpacing.sm),
               Text(
                 '${(progress * 100).toStringAsFixed(1)}%',
@@ -529,9 +463,7 @@ class _ProgressRow extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AMSpacing.xs),
-          AMProgressBar(
-            progress: progress,
-          ),
+          AMProgressBar(progress: progress),
         ],
       ),
     );
@@ -539,10 +471,7 @@ class _ProgressRow extends StatelessWidget {
 }
 
 class _NavigationRow extends StatelessWidget {
-  const _NavigationRow({
-    required this.amId,
-    required this.selectedBeast,
-  });
+  const _NavigationRow({required this.amId, required this.selectedBeast});
 
   final String amId;
   final BeastType selectedBeast;
@@ -555,9 +484,7 @@ class _NavigationRow extends StatelessWidget {
           text: 'SKILLS',
           icon: Icons.pets,
           onPressed: () {
-            context.go(
-              '/member/$amId/beast/skills',
-            );
+            context.go('/member/$amId/beast/skills');
           },
         ),
         const SizedBox(height: AMSpacing.sm),
@@ -576,9 +503,7 @@ class _NavigationRow extends StatelessWidget {
           text: 'SKINS',
           icon: Icons.theater_comedy,
           onPressed: () {
-            context.go(
-              '/member/$amId/beast/skins',
-            );
+            context.go('/member/$amId/beast/skins');
           },
         ),
       ],
@@ -601,45 +526,29 @@ class _OverviewGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _SkillsOverviewCard(
-          state: state,
-          config: config,
-        ),
+        _SkillsOverviewCard(state: state, config: config),
         const SizedBox(height: AMSpacing.md),
-        _TalentOverviewCard(
-          state: state,
-          config: config,
-        ),
+        _TalentOverviewCard(state: state, config: config),
         const SizedBox(height: AMSpacing.md),
-        _SkinsOverviewCard(
-          state: state,
-          config: config,
-        ),
+        _SkinsOverviewCard(state: state, config: config),
         const SizedBox(height: AMSpacing.md),
-        _AboutBeastCard(
-          beastAbout: beastAbout,
-        ),
+        _AboutBeastCard(beastAbout: beastAbout),
       ],
     );
   }
 }
 
 class _SkillsOverviewCard extends StatelessWidget {
-  const _SkillsOverviewCard({
-    required this.state,
-    required this.config,
-  });
+  const _SkillsOverviewCard({required this.state, required this.config});
 
   final BeastState state;
   final BeastProgressConfig config;
 
   @override
   Widget build(BuildContext context) {
-    final trackedSkills = beastSkillDefinitions
-        .where((skill) {
-          return config.skillConfigs[skill.id]?.isTracked ?? true;
-        })
-        .toList();
+    final trackedSkills = beastSkillDefinitions.where((skill) {
+      return config.skillConfigs[skill.id]?.isTracked ?? true;
+    }).toList();
 
     final previewSkills = trackedSkills.take(6).toList();
 
@@ -647,10 +556,7 @@ class _SkillsOverviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'SKILLS OVERVIEW',
-            style: AMTextStyles.subtitle,
-          ),
+          Text('SKILLS OVERVIEW', style: AMTextStyles.subtitle),
           const SizedBox(height: AMSpacing.xs),
           Text(
             '${trackedSkills.length} of '
@@ -667,17 +573,9 @@ class _SkillsOverviewCard extends StatelessWidget {
             for (final skill in previewSkills) ...[
               Row(
                 children: [
-                  const Icon(
-                    Icons.pets,
-                    size: 18,
-                  ),
+                  const Icon(Icons.pets, size: 18),
                   const SizedBox(width: AMSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      skill.name,
-                      style: AMTextStyles.body,
-                    ),
-                  ),
+                  Expanded(child: Text(skill.name, style: AMTextStyles.body)),
                   Text(
                     'Lv. '
                     '${state.skillLevels[skill.id] ?? skill.minLevel}'
@@ -696,44 +594,30 @@ class _SkillsOverviewCard extends StatelessWidget {
 }
 
 class _TalentOverviewCard extends StatelessWidget {
-  const _TalentOverviewCard({
-    required this.state,
-    required this.config,
-  });
+  const _TalentOverviewCard({required this.state, required this.config});
 
   final BeastState state;
   final BeastProgressConfig config;
 
   @override
   Widget build(BuildContext context) {
-    final talents = talentDefinitionsForBeast(
-      state.selectedBeast,
-    );
+    final talents = talentDefinitionsForBeast(state.selectedBeast);
 
-    final talentConfig = config.talentConfigsFor(
-      state.selectedBeast,
-    );
+    final talentConfig = config.talentConfigsFor(state.selectedBeast);
 
     final trackedTalents = talents.where((talent) {
       return talentConfig[talent.id]?.isTracked ?? true;
     }).toList();
 
-    final totalLevels = trackedTalents.fold<int>(
-      0,
-      (sum, talent) {
-        return sum +
-            (state.talentLevels[talent.id] ?? 0);
-      },
-    );
+    final totalLevels = trackedTalents.fold<int>(0, (sum, talent) {
+      return sum + (state.talentLevels[talent.id] ?? 0);
+    });
 
     return AMCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'TALENT TREE OVERVIEW',
-            style: AMTextStyles.subtitle,
-          ),
+          Text('TALENT TREE OVERVIEW', style: AMTextStyles.subtitle),
           const SizedBox(height: AMSpacing.xs),
           Text(
             '${trackedTalents.length} of '
@@ -741,10 +625,7 @@ class _TalentOverviewCard extends StatelessWidget {
             style: AMTextStyles.muted,
           ),
           const SizedBox(height: AMSpacing.sm),
-          Text(
-            'Tracked Talent Levels: $totalLevels',
-            style: AMTextStyles.body,
-          ),
+          Text('Tracked Talent Levels: $totalLevels', style: AMTextStyles.body),
           const SizedBox(height: AMSpacing.lg),
           const Center(
             child: Text(
@@ -756,10 +637,7 @@ class _TalentOverviewCard extends StatelessWidget {
               '   🟢   🟢\n'
               '      🟠',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 28,
-                height: 1.4,
-              ),
+              style: TextStyle(fontSize: 28, height: 1.4),
             ),
           ),
         ],
@@ -769,10 +647,7 @@ class _TalentOverviewCard extends StatelessWidget {
 }
 
 class _SkinsOverviewCard extends StatelessWidget {
-  const _SkinsOverviewCard({
-    required this.state,
-    required this.config,
-  });
+  const _SkinsOverviewCard({required this.state, required this.config});
 
   final BeastState state;
   final BeastProgressConfig config;
@@ -787,10 +662,7 @@ class _SkinsOverviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'SKINS OVERVIEW',
-            style: AMTextStyles.subtitle,
-          ),
+          Text('SKINS OVERVIEW', style: AMTextStyles.subtitle),
           const SizedBox(height: AMSpacing.xs),
           Text(
             '${trackedSkins.length} of '
@@ -809,8 +681,7 @@ class _SkinsOverviewCard extends StatelessWidget {
               runSpacing: AMSpacing.md,
               children: trackedSkins.map((skin) {
                 final targetLevel =
-                    config.skinConfigs[skin.id]?.targetLevel ??
-                        skin.maxLevel;
+                    config.skinConfigs[skin.id]?.targetLevel ?? skin.maxLevel;
 
                 return SizedBox(
                   width: 110,
@@ -827,18 +698,11 @@ class _SkinsOverviewCard extends StatelessWidget {
                             ),
                             fit: BoxFit.cover,
                             alignment: Alignment.topCenter,
-                            errorBuilder: (
-                              context,
-                              error,
-                              stackTrace,
-                            ) {
+                            errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 alignment: Alignment.center,
                                 color: Colors.black26,
-                                child: const Icon(
-                                  Icons.pets,
-                                  size: 36,
-                                ),
+                                child: const Icon(Icons.pets, size: 36),
                               );
                             },
                           ),
@@ -870,9 +734,7 @@ class _SkinsOverviewCard extends StatelessWidget {
 }
 
 class _AboutBeastCard extends StatelessWidget {
-  const _AboutBeastCard({
-    required this.beastAbout,
-  });
+  const _AboutBeastCard({required this.beastAbout});
 
   final String beastAbout;
 
@@ -882,15 +744,9 @@ class _AboutBeastCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'ABOUT THIS BEAST',
-            style: AMTextStyles.subtitle,
-          ),
+          Text('ABOUT THIS BEAST', style: AMTextStyles.subtitle),
           const SizedBox(height: AMSpacing.md),
-          Text(
-            beastAbout,
-            style: AMTextStyles.body,
-          ),
+          Text(beastAbout, style: AMTextStyles.body),
         ],
       ),
     );
@@ -914,10 +770,7 @@ String _portraitPathForBeast(BeastType beastType) {
   return 'assets/images/beasts/${beastType.name}.webp';
 }
 
-String _skinImagePath({
-  required BeastType beastType,
-  required String skinId,
-}) {
+String _skinImagePath({required BeastType beastType, required String skinId}) {
   return 'assets/images/skins/'
       '${beastType.name}/'
       '$skinId.webp';
