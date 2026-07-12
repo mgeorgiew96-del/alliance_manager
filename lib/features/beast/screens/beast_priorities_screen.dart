@@ -6,6 +6,7 @@ import '../../../shared/theme/am_text_styles.dart';
 import '../../../shared/widgets/am_card.dart';
 import '../../../shared/widgets/am_page.dart';
 import '../../../shared/widgets/am_save_cancel_bar.dart';
+import '../../../shared/widgets/category_weight_editor.dart';
 import '../../../shared/widgets/priority_item_editor.dart';
 import '../definitions/beast_skill_definitions.dart';
 import '../definitions/beast_skin_definitions.dart';
@@ -43,10 +44,53 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
               },
             ),
             const SizedBox(height: AMSpacing.lg),
-            _CategoryWeightsCard(
-              skillsWeight: config.skillsWeight,
-              talentsWeight: config.talentsWeight,
-              skinsWeight: config.skinsWeight,
+            CategoryWeightEditor(
+              title: 'CATEGORY WEIGHTS',
+              description:
+                  'These values determine how much each category '
+                  'contributes to overall Beast progress. The total '
+                  'must equal 100% before saving.',
+              items: [
+                CategoryWeightItem(
+                  id: 'skills',
+                  label: 'Skills',
+                  weight: config.skillsWeight,
+                ),
+                CategoryWeightItem(
+                  id: 'talents',
+                  label: 'Talents',
+                  weight: config.talentsWeight,
+                ),
+                CategoryWeightItem(
+                  id: 'skins',
+                  label: 'Skins',
+                  weight: config.skinsWeight,
+                ),
+              ],
+              onWeightChanged: (categoryId, newWeight) {
+                switch (categoryId) {
+                  case 'skills':
+                    controller.setCategoryWeights(
+                      skillsWeight: newWeight,
+                      talentsWeight: config.talentsWeight,
+                      skinsWeight: config.skinsWeight,
+                    );
+
+                  case 'talents':
+                    controller.setCategoryWeights(
+                      skillsWeight: config.skillsWeight,
+                      talentsWeight: newWeight,
+                      skinsWeight: config.skinsWeight,
+                    );
+
+                  case 'skins':
+                    controller.setCategoryWeights(
+                      skillsWeight: config.skillsWeight,
+                      talentsWeight: config.talentsWeight,
+                      skinsWeight: newWeight,
+                    );
+                }
+              },
             ),
             const SizedBox(height: AMSpacing.lg),
             TabBar(
@@ -66,6 +110,19 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
             const SizedBox(height: AMSpacing.lg),
             AMSaveCancelBar(
               onSave: () async {
+                if (!config.weightsAreValid) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Category weights must total 100% before '
+                        'saving.',
+                      ),
+                    ),
+                  );
+
+                  return;
+                }
+
                 controller.save();
 
                 if (!context.mounted) {
@@ -155,82 +212,6 @@ class _PageHeader extends StatelessWidget {
           'management.',
           style: AMTextStyles.muted,
         ),
-      ],
-    );
-  }
-}
-
-class _CategoryWeightsCard extends StatelessWidget {
-  const _CategoryWeightsCard({
-    required this.skillsWeight,
-    required this.talentsWeight,
-    required this.skinsWeight,
-  });
-
-  final double skillsWeight;
-  final double talentsWeight;
-  final double skinsWeight;
-
-  @override
-  Widget build(BuildContext context) {
-    final totalWeight = skillsWeight + talentsWeight + skinsWeight;
-
-    final weightsAreValid = (totalWeight - 1).abs() <= 0.0001;
-
-    return AMCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('CATEGORY WEIGHTS', style: AMTextStyles.subtitle),
-          const SizedBox(height: AMSpacing.xs),
-          Text(
-            'These values determine how much each category '
-            'contributes to overall Beast progress.',
-            style: AMTextStyles.muted,
-          ),
-          const SizedBox(height: AMSpacing.md),
-          _WeightRow(label: 'Skills', weight: skillsWeight),
-          const SizedBox(height: AMSpacing.sm),
-          _WeightRow(label: 'Talents', weight: talentsWeight),
-          const SizedBox(height: AMSpacing.sm),
-          _WeightRow(label: 'Skins', weight: skinsWeight),
-          const SizedBox(height: AMSpacing.md),
-          const Divider(),
-          const SizedBox(height: AMSpacing.sm),
-          Row(
-            children: [
-              Expanded(child: Text('Total', style: AMTextStyles.subtitle)),
-              Text(_percentageText(totalWeight), style: AMTextStyles.subtitle),
-            ],
-          ),
-          if (!weightsAreValid) ...[
-            const SizedBox(height: AMSpacing.sm),
-            const Text(
-              'Category weights must total 100%.',
-              style: TextStyle(
-                color: Colors.orange,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _WeightRow extends StatelessWidget {
-  const _WeightRow({required this.label, required this.weight});
-
-  final String label;
-  final double weight;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: Text(label, style: AMTextStyles.body)),
-        Text(_percentageText(weight), style: AMTextStyles.body),
       ],
     );
   }
@@ -561,10 +542,6 @@ class _SkinsPrioritiesSection extends ConsumerWidget {
       ],
     );
   }
-}
-
-String _percentageText(double value) {
-  return '${(value * 100).toStringAsFixed(0)}%';
 }
 
 String _beastName(BeastType beastType) {
