@@ -123,7 +123,7 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
                   return;
                 }
 
-                controller.save();
+                await controller.save();
 
                 if (!context.mounted) {
                   return;
@@ -134,7 +134,7 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
                 );
               },
               onCancel: () async {
-                controller.cancel();
+                await controller.cancel();
 
                 if (!context.mounted) {
                   return;

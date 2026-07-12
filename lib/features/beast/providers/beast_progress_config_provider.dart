@@ -1,17 +1,34 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/progress/progress_priority.dart';
 import '../models/beast_progress_config.dart';
 import '../models/beast_type.dart';
+import '../repositories/beast_progress_config_repository.dart';
+import 'beast_progress_config_repository_provider.dart';
 
 class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
+  late BeastProgressConfigRepository _repository;
   late BeastProgressConfig _savedConfig;
 
   @override
   BeastProgressConfig build() {
+    _repository = ref.read(beastProgressConfigRepositoryProvider);
+
     final initialConfig = BeastProgressConfig.initial();
     _savedConfig = initialConfig;
+
+    unawaited(_loadConfig());
+
     return initialConfig;
+  }
+
+  Future<void> _loadConfig() async {
+    final loadedConfig = await _repository.loadConfig();
+
+    _savedConfig = loadedConfig;
+    state = loadedConfig;
   }
 
   void setCategoryWeights({
@@ -28,6 +45,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
 
   void setSkillTracked({required String skillId, required bool isTracked}) {
     final currentConfig = state.skillConfigs[skillId];
+
     if (currentConfig == null) {
       return;
     }
@@ -46,6 +64,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
     required int targetLevel,
   }) {
     final currentConfig = state.skillConfigs[skillId];
+
     if (currentConfig == null) {
       return;
     }
@@ -64,6 +83,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
     required ProgressPriority priority,
   }) {
     final currentConfig = state.skillConfigs[skillId];
+
     if (currentConfig == null) {
       return;
     }
@@ -85,6 +105,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
     final currentBeastConfigs = state.talentConfigsFor(beastType);
 
     final currentConfig = currentBeastConfigs[talentId];
+
     if (currentConfig == null) {
       return;
     }
@@ -111,6 +132,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
     final currentBeastConfigs = state.talentConfigsFor(beastType);
 
     final currentConfig = currentBeastConfigs[talentId];
+
     if (currentConfig == null) {
       return;
     }
@@ -137,6 +159,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
     final currentBeastConfigs = state.talentConfigsFor(beastType);
 
     final currentConfig = currentBeastConfigs[talentId];
+
     if (currentConfig == null) {
       return;
     }
@@ -155,6 +178,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
 
   void setSkinTracked({required String skinId, required bool isTracked}) {
     final currentConfig = state.skinConfigs[skinId];
+
     if (currentConfig == null) {
       return;
     }
@@ -170,6 +194,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
 
   void setSkinTargetLevel({required String skinId, required int targetLevel}) {
     final currentConfig = state.skinConfigs[skinId];
+
     if (currentConfig == null) {
       return;
     }
@@ -188,6 +213,7 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
     required ProgressPriority priority,
   }) {
     final currentConfig = state.skinConfigs[skinId];
+
     if (currentConfig == null) {
       return;
     }
@@ -215,16 +241,29 @@ class BeastProgressConfigController extends Notifier<BeastProgressConfig> {
     state = state.copyWith(talentConfigsByBeast: updatedConfigsByBeast);
   }
 
-  void save() {
+  Future<void> save() async {
+    if (!state.weightsAreValid) {
+      throw StateError('Beast category weights must total 100%.');
+    }
+
+    await _repository.saveConfig(config: state);
+
     _savedConfig = state;
   }
 
-  void cancel() {
-    state = _savedConfig;
+  Future<void> cancel() async {
+    final savedConfig = await _repository.loadConfig();
+
+    _savedConfig = savedConfig;
+    state = savedConfig;
   }
 
   void resetToDefaults() {
     state = BeastProgressConfig.initial();
+  }
+
+  Future<void> restoreSavedConfig() async {
+    state = _savedConfig;
   }
 }
 
