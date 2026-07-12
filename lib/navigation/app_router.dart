@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 
+import '../features/administration/screens/access_denied_screen.dart';
+import '../features/administration/screens/administration_screen.dart';
 import '../features/authentication/screens/create_account_request_screen.dart';
 import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/waiting_approval_screen.dart';
@@ -13,6 +15,8 @@ import '../features/dashboard/screens/dashboard_screen.dart';
 import '../features/member_profile/screens/member_profile_screen.dart';
 import '../features/members/screens/members_screen.dart';
 import '../features/welcome/screens/welcome_screen.dart';
+import '../shared/permissions/admin_permissions.dart';
+import '../shared/services/service_locator.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -99,7 +103,45 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: '/access-denied',
+      builder: (context, state) {
+        return const AccessDeniedScreen();
+      },
+    ),
+    GoRoute(
+      path: '/admin',
+      redirect: (context, state) {
+        final member = sessionService.member;
+
+        if (member == null) {
+          return '/login';
+        }
+
+        if (!isAllianceAdministrator(member.rank)) {
+          return '/access-denied';
+        }
+
+        return null;
+      },
+      builder: (context, state) {
+        return const AdministrationScreen();
+      },
+    ),
+    GoRoute(
       path: '/admin/beast/priorities',
+      redirect: (context, state) {
+        final member = sessionService.member;
+
+        if (member == null) {
+          return '/login';
+        }
+
+        if (!isAllianceAdministrator(member.rank)) {
+          return '/access-denied';
+        }
+
+        return null;
+      },
       builder: (context, state) {
         return const BeastPrioritiesScreen();
       },

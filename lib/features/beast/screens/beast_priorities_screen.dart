@@ -7,7 +7,7 @@ import '../../../shared/widgets/am_card.dart';
 import '../../../shared/widgets/am_page.dart';
 import '../../../shared/widgets/am_save_cancel_bar.dart';
 import '../../../shared/widgets/category_weight_editor.dart';
-import '../../../shared/widgets/priority_item_editor.dart';
+import '../../../shared/widgets/priority_editor_list.dart';
 import '../definitions/beast_skill_definitions.dart';
 import '../definitions/beast_skin_definitions.dart';
 import '../definitions/beast_talent_definitions.dart';
@@ -75,6 +75,7 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
                       talentsWeight: config.talentsWeight,
                       skinsWeight: config.skinsWeight,
                     );
+                    return;
 
                   case 'talents':
                     controller.setCategoryWeights(
@@ -82,6 +83,7 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
                       talentsWeight: newWeight,
                       skinsWeight: config.skinsWeight,
                     );
+                    return;
 
                   case 'skins':
                     controller.setCategoryWeights(
@@ -89,6 +91,7 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
                       talentsWeight: config.talentsWeight,
                       skinsWeight: newWeight,
                     );
+                    return;
                 }
               },
             ),
@@ -119,7 +122,6 @@ class _BeastPrioritiesScreenState extends ConsumerState<BeastPrioritiesScreen> {
                       ),
                     ),
                   );
-
                   return;
                 }
 
@@ -232,84 +234,58 @@ class _SkillsPrioritiesSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AMCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.pets),
-                  const SizedBox(width: AMSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      'SKILL PRIORITIES',
-                      style: AMTextStyles.subtitle,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AMSpacing.sm),
-              Text(
-                '$trackedCount of '
-                '${beastSkillDefinitions.length} skills are '
-                'currently tracked.',
-                style: AMTextStyles.body,
-              ),
-              const SizedBox(height: AMSpacing.xs),
-              Text(
-                'Ignored skills remain stored in the player profile '
-                'but do not affect Beast progress.',
-                style: AMTextStyles.muted,
-              ),
-            ],
-          ),
+        _SectionSummaryCard(
+          icon: Icons.pets,
+          title: 'SKILL PRIORITIES',
+          trackedCount: trackedCount,
+          totalCount: beastSkillDefinitions.length,
+          itemLabel: 'skills',
+          description:
+              'Ignored skills remain stored in the player profile '
+              'but do not affect Beast progress.',
         ),
         const SizedBox(height: AMSpacing.md),
-        for (final skill in beastSkillDefinitions) ...[
-          Builder(
-            builder: (context) {
-              final itemConfig = config.skillConfigs[skill.id];
+        PriorityEditorList(
+          items: beastSkillDefinitions,
+          idForItem: (skill) {
+            return skill.id;
+          },
+          titleForItem: (skill) {
+            return skill.name;
+          },
+          minimumLevelForItem: (skill) {
+            return skill.minLevel;
+          },
+          maximumLevelForItem: (skill) {
+            return skill.maxLevel;
+          },
+          configForItem: (skill) {
+            final itemConfig = config.skillConfigs[skill.id];
 
-              if (itemConfig == null) {
-                return AMCard(
-                  child: Text(
-                    'Missing progress configuration for '
-                    '${skill.name}.',
-                    style: AMTextStyles.muted,
-                  ),
-                );
-              }
+            if (itemConfig == null) {
+              return null;
+            }
 
-              return PriorityItemEditor(
-                title: skill.name,
-                isTracked: itemConfig.isTracked,
-                targetLevel: itemConfig.targetLevel,
-                minimumLevel: skill.minLevel,
-                maximumLevel: skill.maxLevel,
-                priority: itemConfig.priority,
-                onTrackedChanged: (isTracked) {
-                  controller.setSkillTracked(
-                    skillId: skill.id,
-                    isTracked: isTracked,
-                  );
-                },
-                onTargetLevelChanged: (targetLevel) {
-                  controller.setSkillTargetLevel(
-                    skillId: skill.id,
-                    targetLevel: targetLevel,
-                  );
-                },
-                onPriorityChanged: (priority) {
-                  controller.setSkillPriority(
-                    skillId: skill.id,
-                    priority: priority,
-                  );
-                },
-              );
-            },
-          ),
-          const SizedBox(height: AMSpacing.md),
-        ],
+            return PriorityEditorItemConfig(
+              isTracked: itemConfig.isTracked,
+              targetLevel: itemConfig.targetLevel,
+              priority: itemConfig.priority,
+            );
+          },
+          onTrackedChanged: (skill, isTracked) {
+            controller.setSkillTracked(skillId: skill.id, isTracked: isTracked);
+          },
+          onTargetLevelChanged: (skill, targetLevel) {
+            controller.setSkillTargetLevel(
+              skillId: skill.id,
+              targetLevel: targetLevel,
+            );
+          },
+          onPriorityChanged: (skill, priority) {
+            controller.setSkillPriority(skillId: skill.id, priority: priority);
+          },
+          emptyMessage: 'No Beast skills are available.',
+        ),
       ],
     );
   }
@@ -358,8 +334,8 @@ class _TalentsPrioritiesSection extends ConsumerWidget {
               ),
               const SizedBox(height: AMSpacing.sm),
               Text(
-                'Choose a Beast to configure its unique '
-                'Talent priorities.',
+                'Choose a Beast to configure its unique Talent '
+                'priorities.',
                 style: AMTextStyles.body,
               ),
               const SizedBox(height: AMSpacing.md),
@@ -393,54 +369,58 @@ class _TalentsPrioritiesSection extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: AMSpacing.md),
-        for (final talent in talents) ...[
-          Builder(
-            builder: (context) {
-              final itemConfig = talentConfigs[talent.id];
+        PriorityEditorList(
+          items: talents,
+          idForItem: (talent) {
+            return talent.id;
+          },
+          titleForItem: (talent) {
+            return talent.name;
+          },
+          minimumLevelForItem: (_) {
+            return 0;
+          },
+          maximumLevelForItem: (talent) {
+            return talent.maxLevel;
+          },
+          configForItem: (talent) {
+            final itemConfig = talentConfigs[talent.id];
 
-              if (itemConfig == null) {
-                return AMCard(
-                  child: Text(
-                    'Missing progress configuration for '
-                    '${talent.name}.',
-                    style: AMTextStyles.muted,
-                  ),
-                );
-              }
+            if (itemConfig == null) {
+              return null;
+            }
 
-              return PriorityItemEditor(
-                title: talent.name,
-                isTracked: itemConfig.isTracked,
-                targetLevel: itemConfig.targetLevel,
-                minimumLevel: 0,
-                maximumLevel: talent.maxLevel,
-                priority: itemConfig.priority,
-                onTrackedChanged: (isTracked) {
-                  controller.setTalentTracked(
-                    beastType: selectedBeast,
-                    talentId: talent.id,
-                    isTracked: isTracked,
-                  );
-                },
-                onTargetLevelChanged: (targetLevel) {
-                  controller.setTalentTargetLevel(
-                    beastType: selectedBeast,
-                    talentId: talent.id,
-                    targetLevel: targetLevel,
-                  );
-                },
-                onPriorityChanged: (priority) {
-                  controller.setTalentPriority(
-                    beastType: selectedBeast,
-                    talentId: talent.id,
-                    priority: priority,
-                  );
-                },
-              );
-            },
-          ),
-          const SizedBox(height: AMSpacing.md),
-        ],
+            return PriorityEditorItemConfig(
+              isTracked: itemConfig.isTracked,
+              targetLevel: itemConfig.targetLevel,
+              priority: itemConfig.priority,
+            );
+          },
+          onTrackedChanged: (talent, isTracked) {
+            controller.setTalentTracked(
+              beastType: selectedBeast,
+              talentId: talent.id,
+              isTracked: isTracked,
+            );
+          },
+          onTargetLevelChanged: (talent, targetLevel) {
+            controller.setTalentTargetLevel(
+              beastType: selectedBeast,
+              talentId: talent.id,
+              targetLevel: targetLevel,
+            );
+          },
+          onPriorityChanged: (talent, priority) {
+            controller.setTalentPriority(
+              beastType: selectedBeast,
+              talentId: talent.id,
+              priority: priority,
+            );
+          },
+          emptyMessage:
+              'No talents are available for '
+              '${_beastName(selectedBeast)}.',
+        ),
       ],
     );
   }
@@ -461,85 +441,103 @@ class _SkinsPrioritiesSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AMCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.theater_comedy),
-                  const SizedBox(width: AMSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      'SKIN PRIORITIES',
-                      style: AMTextStyles.subtitle,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AMSpacing.sm),
-              Text(
-                '$trackedCount of '
-                '${beastSkinDefinitions.length} skins are '
-                'currently tracked.',
-                style: AMTextStyles.body,
-              ),
-              const SizedBox(height: AMSpacing.xs),
-              Text(
-                'Beast skins stack together. Ignored skins remain '
-                'stored but do not contribute to Beast progress.',
-                style: AMTextStyles.muted,
-              ),
-            ],
-          ),
+        _SectionSummaryCard(
+          icon: Icons.theater_comedy,
+          title: 'SKIN PRIORITIES',
+          trackedCount: trackedCount,
+          totalCount: beastSkinDefinitions.length,
+          itemLabel: 'skins',
+          description:
+              'Beast skins stack together. Ignored skins remain '
+              'stored but do not contribute to Beast progress.',
         ),
         const SizedBox(height: AMSpacing.md),
-        for (final skin in beastSkinDefinitions) ...[
-          Builder(
-            builder: (context) {
-              final itemConfig = config.skinConfigs[skin.id];
+        PriorityEditorList(
+          items: beastSkinDefinitions,
+          idForItem: (skin) {
+            return skin.id;
+          },
+          titleForItem: (skin) {
+            return skin.name;
+          },
+          minimumLevelForItem: (skin) {
+            return skin.minLevel;
+          },
+          maximumLevelForItem: (skin) {
+            return skin.maxLevel;
+          },
+          configForItem: (skin) {
+            final itemConfig = config.skinConfigs[skin.id];
 
-              if (itemConfig == null) {
-                return AMCard(
-                  child: Text(
-                    'Missing progress configuration for '
-                    '${skin.name}.',
-                    style: AMTextStyles.muted,
-                  ),
-                );
-              }
+            if (itemConfig == null) {
+              return null;
+            }
 
-              return PriorityItemEditor(
-                title: skin.name,
-                isTracked: itemConfig.isTracked,
-                targetLevel: itemConfig.targetLevel,
-                minimumLevel: skin.minLevel,
-                maximumLevel: skin.maxLevel,
-                priority: itemConfig.priority,
-                onTrackedChanged: (isTracked) {
-                  controller.setSkinTracked(
-                    skinId: skin.id,
-                    isTracked: isTracked,
-                  );
-                },
-                onTargetLevelChanged: (targetLevel) {
-                  controller.setSkinTargetLevel(
-                    skinId: skin.id,
-                    targetLevel: targetLevel,
-                  );
-                },
-                onPriorityChanged: (priority) {
-                  controller.setSkinPriority(
-                    skinId: skin.id,
-                    priority: priority,
-                  );
-                },
-              );
-            },
-          ),
-          const SizedBox(height: AMSpacing.md),
-        ],
+            return PriorityEditorItemConfig(
+              isTracked: itemConfig.isTracked,
+              targetLevel: itemConfig.targetLevel,
+              priority: itemConfig.priority,
+            );
+          },
+          onTrackedChanged: (skin, isTracked) {
+            controller.setSkinTracked(skinId: skin.id, isTracked: isTracked);
+          },
+          onTargetLevelChanged: (skin, targetLevel) {
+            controller.setSkinTargetLevel(
+              skinId: skin.id,
+              targetLevel: targetLevel,
+            );
+          },
+          onPriorityChanged: (skin, priority) {
+            controller.setSkinPriority(skinId: skin.id, priority: priority);
+          },
+          emptyMessage: 'No Beast skins are available.',
+        ),
       ],
+    );
+  }
+}
+
+class _SectionSummaryCard extends StatelessWidget {
+  const _SectionSummaryCard({
+    required this.icon,
+    required this.title,
+    required this.trackedCount,
+    required this.totalCount,
+    required this.itemLabel,
+    required this.description,
+  });
+
+  final IconData icon;
+  final String title;
+  final int trackedCount;
+  final int totalCount;
+  final String itemLabel;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return AMCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon),
+              const SizedBox(width: AMSpacing.sm),
+              Expanded(child: Text(title, style: AMTextStyles.subtitle)),
+            ],
+          ),
+          const SizedBox(height: AMSpacing.sm),
+          Text(
+            '$trackedCount of $totalCount $itemLabel are '
+            'currently tracked.',
+            style: AMTextStyles.body,
+          ),
+          const SizedBox(height: AMSpacing.xs),
+          Text(description, style: AMTextStyles.muted),
+        ],
+      ),
     );
   }
 }

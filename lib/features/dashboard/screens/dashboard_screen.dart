@@ -9,6 +9,7 @@ import '../../../shared/theme/am_text_styles.dart';
 import '../../../shared/widgets/am_card.dart';
 import '../../../shared/widgets/am_page.dart';
 import '../../../shared/widgets/am_primary_button.dart';
+import '../../../shared/permissions/admin_permissions.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -51,10 +52,7 @@ class DashboardScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'No active session',
-                style: AMTextStyles.title,
-              ),
+              const Text('No active session', style: AMTextStyles.title),
               const SizedBox(height: AMSpacing.md),
               AMPrimaryButton(
                 text: 'BACK TO LOGIN',
@@ -65,6 +63,8 @@ class DashboardScreen extends StatelessWidget {
         ),
       );
     }
+
+    final canAccessAdministration = isAllianceAdministrator(member.rank);
 
     return AMPage(
       child: Column(
@@ -80,7 +80,8 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: AMSpacing.sm),
                 Text(
-                  '${_rankLabel(member.rank)} • APX • Realm ${member.realmId}',
+                  '${_rankLabel(member.rank)} • APX • '
+                  'Realm ${member.realmId}',
                   style: AMTextStyles.subtitle,
                 ),
                 const SizedBox(height: AMSpacing.lg),
@@ -107,12 +108,19 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: AMSpacing.md),
           const _DashboardCard(
             title: 'Alliance Snapshot',
-            content: 'Members: 1 / 100\nPending requests: 0\nHealth: Stable',
+            content:
+                'Members: 1 / 100\n'
+                'Pending requests: 0\n'
+                'Health: Stable',
           ),
           const SizedBox(height: AMSpacing.md),
-          const _DashboardCard(
+          _DashboardCard(
             title: 'Quick Actions',
-            content: 'Members • Beast • Equipment • Titan • Statistics',
+            content: canAccessAdministration
+                ? 'Members • Beast • Equipment • Titan • '
+                      'Statistics • Administration'
+                : 'Members • Beast • Equipment • Titan • '
+                      'Statistics',
           ),
           const SizedBox(height: AMSpacing.md),
           const _DashboardCard(
@@ -123,8 +131,20 @@ class DashboardScreen extends StatelessWidget {
           AMPrimaryButton(
             text: 'MEMBERS',
             icon: Icons.people,
-            onPressed: () => context.go('/members'),
+            onPressed: () {
+              context.go('/members');
+            },
           ),
+          if (canAccessAdministration) ...[
+            const SizedBox(height: AMSpacing.md),
+            AMPrimaryButton(
+              text: 'ADMINISTRATION',
+              icon: Icons.admin_panel_settings,
+              onPressed: () {
+                context.go('/admin');
+              },
+            ),
+          ],
         ],
       ),
     );
@@ -132,10 +152,7 @@ class DashboardScreen extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.label,
-    required this.value,
-  });
+  const _InfoRow({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -156,10 +173,7 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _DashboardCard extends StatelessWidget {
-  const _DashboardCard({
-    required this.title,
-    required this.content,
-  });
+  const _DashboardCard({required this.title, required this.content});
 
   final String title;
   final String content;
