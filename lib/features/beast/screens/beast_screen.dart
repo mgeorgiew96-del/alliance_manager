@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/constants/am_assets.dart';
 import '../../../shared/theme/am_spacing.dart';
 import '../../../shared/theme/am_text_styles.dart';
+import '../../../shared/widgets/am_asset_image.dart';
 import '../../../shared/widgets/am_card.dart';
+import '../../../shared/widgets/am_module_overview.dart';
 import '../../../shared/widgets/am_page.dart';
 import '../../../shared/widgets/am_primary_button.dart';
 import '../../../shared/widgets/am_progress_bar.dart';
@@ -16,8 +19,8 @@ import '../definitions/beast_talent_definitions.dart';
 import '../models/beast_progress_config.dart';
 import '../models/beast_state.dart';
 import '../models/beast_type.dart';
-import '../services/beast_progress_service.dart';
 import '../providers/beast_progress_config_provider.dart';
+import '../services/beast_progress_service.dart';
 
 class BeastScreen extends ConsumerWidget {
   const BeastScreen({super.key, required this.amId});
@@ -118,7 +121,7 @@ class _BeastOverview extends ConsumerWidget {
   }
 
   String get _beastImagePath {
-    return _portraitPathForBeast(state.selectedBeast);
+    return AMAssets.beast.overview(state.selectedBeast);
   }
 
   String get _beastAbout {
@@ -126,12 +129,15 @@ class _BeastOverview extends ConsumerWidget {
       case BeastType.panda:
         return 'The Panda is the guardian of balance and resilience. '
             'Best for defensive builds.';
+
       case BeastType.dragon:
         return 'The Dragon represents raw power and pressure. '
             'Best for 1vs1 damage-focused builds.';
+
       case BeastType.pegasus:
         return 'The Pegasus brings speed and momentum. '
             'Best for balanced attacking builds.';
+
       case BeastType.phoenix:
         return 'The Phoenix represents rebirth and endurance. '
             'Best until Beast Talents are above 67k.';
@@ -142,109 +148,73 @@ class _BeastOverview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.read(beastControllerProvider.notifier);
 
-    return AMPage(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _BeastBanner(),
-            const SizedBox(height: AMSpacing.lg),
-            _HeroSection(
-              selectedBeast: state.selectedBeast,
-              selectedBeastName: _beastName,
-              selectedBeastImagePath: _beastImagePath,
-              beastLevel: state.beastLevel,
-              maxBeastLevel: _maxBeastLevel,
-              beastLevelProgress: _levelProgress,
-              overallProgress: _overallProgress,
-              hasUnsavedChanges: state.hasUnsavedChanges,
-              onSelectBeast: controller.selectBeast,
-              onIncreaseLevel: controller.increaseBeastLevel,
-              onDecreaseLevel: controller.decreaseBeastLevel,
-              onSave: controller.save,
-              onCancel: controller.cancel,
-            ),
-            const SizedBox(height: AMSpacing.md),
-            _SubProgressCard(
-              levelProgress: _levelProgress,
-              skillsProgress: _skillsProgress,
-              talentsProgress: _talentsProgress,
-              skinsProgress: _skinsProgress,
-              skillsWeight: config.skillsWeight,
-              talentsWeight: config.talentsWeight,
-              skinsWeight: config.skinsWeight,
-            ),
-            const SizedBox(height: AMSpacing.md),
-            _NavigationRow(amId: amId, selectedBeast: state.selectedBeast),
-            const SizedBox(height: AMSpacing.md),
-            _OverviewGrid(
-              state: state,
-              config: config,
-              beastAbout: _beastAbout,
-            ),
-            const SizedBox(height: AMSpacing.md),
-            Center(
-              child: Text(
-                'Last Updated: $_lastUpdatedText',
-                style: AMTextStyles.muted,
-              ),
-            ),
-          ],
-        ),
+    return AMModuleOverview(
+      title: 'Beast',
+      bannerPath: AMAssets.common.banner('beast_banner'),
+      bannerTagline: 'Four beasts, one bond. Unleash their true power.',
+      bannerAlignment: Alignment.topCenter,
+      description:
+          'Manage Beast level, skills, talents, skins, and '
+          'tracked progress.',
+      fallbackIcon: Icons.pets,
+      onBack: () {
+        context.go('/member/$amId');
+      },
+      progressContent: _HeroSection(
+        selectedBeast: state.selectedBeast,
+        selectedBeastName: _beastName,
+        selectedBeastImagePath: _beastImagePath,
+        beastLevel: state.beastLevel,
+        maxBeastLevel: _maxBeastLevel,
+        beastLevelProgress: _levelProgress,
+        overallProgress: _overallProgress,
+        onSelectBeast: controller.selectBeast,
+        onIncreaseLevel: controller.increaseBeastLevel,
+        onDecreaseLevel: controller.decreaseBeastLevel,
       ),
-    );
-  }
-}
-
-class _BeastBanner extends StatelessWidget {
-  const _BeastBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: AspectRatio(
-        aspectRatio: 16 / 6,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/images/banners/beast_banner.webp',
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
-            ),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color.fromRGBO(0, 0, 0, 0.05),
-                    Color.fromRGBO(0, 0, 0, 0.45),
-                    Color.fromRGBO(0, 0, 0, 0.90),
-                  ],
-                  stops: [0.0, 0.55, 1.0],
-                ),
-              ),
-            ),
-            Positioned(
-              left: AMSpacing.lg,
-              right: AMSpacing.lg,
-              bottom: AMSpacing.lg,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('BEAST', style: AMTextStyles.title),
-                  const SizedBox(height: AMSpacing.xs),
-                  Text(
-                    'Four beasts, one bond. Unleash their true power.',
-                    style: AMTextStyles.body,
+      unsavedChangesContent: state.hasUnsavedChanges
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  '● Unsaved Beast changes',
+                  style: TextStyle(
+                    color: Colors.orange,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: AMSpacing.md),
+                AMSaveCancelBar(
+                  onSave: controller.save,
+                  onCancel: controller.cancel,
+                ),
+              ],
+            )
+          : null,
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _SubProgressCard(
+            levelProgress: _levelProgress,
+            skillsProgress: _skillsProgress,
+            talentsProgress: _talentsProgress,
+            skinsProgress: _skinsProgress,
+            skillsWeight: config.skillsWeight,
+            talentsWeight: config.talentsWeight,
+            skinsWeight: config.skinsWeight,
+          ),
+          const SizedBox(height: AMSpacing.md),
+          _NavigationRow(amId: amId, selectedBeast: state.selectedBeast),
+          const SizedBox(height: AMSpacing.md),
+          _OverviewGrid(state: state, config: config, beastAbout: _beastAbout),
+          const SizedBox(height: AMSpacing.md),
+          Center(
+            child: Text(
+              'Last Updated: $_lastUpdatedText',
+              style: AMTextStyles.muted,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -259,27 +229,25 @@ class _HeroSection extends StatelessWidget {
     required this.maxBeastLevel,
     required this.beastLevelProgress,
     required this.overallProgress,
-    required this.hasUnsavedChanges,
     required this.onSelectBeast,
     required this.onIncreaseLevel,
     required this.onDecreaseLevel,
-    required this.onSave,
-    required this.onCancel,
   });
 
   final BeastType selectedBeast;
   final String selectedBeastName;
   final String selectedBeastImagePath;
+
   final int beastLevel;
   final int maxBeastLevel;
+
   final double beastLevelProgress;
   final double overallProgress;
-  final bool hasUnsavedChanges;
+
   final ValueChanged<BeastType> onSelectBeast;
+
   final VoidCallback onIncreaseLevel;
   final VoidCallback onDecreaseLevel;
-  final Future<void> Function() onSave;
-  final Future<void> Function() onCancel;
 
   @override
   Widget build(BuildContext context) {
@@ -296,8 +264,14 @@ class _HeroSection extends StatelessWidget {
               return ChoiceChip(
                 selected: isSelected,
                 label: Text(_nameForBeast(beastType)),
-                avatar: CircleAvatar(
-                  backgroundImage: AssetImage(_portraitPathForBeast(beastType)),
+                avatar: ClipOval(
+                  child: AMAssetImage(
+                    path: AMAssets.beast.overview(beastType),
+                    size: 32,
+                    fit: BoxFit.cover,
+                    fallbackIcon: Icons.pets,
+                    fallbackIconSize: 18,
+                  ),
                 ),
                 onSelected: (_) {
                   onSelectBeast(beastType);
@@ -306,42 +280,64 @@ class _HeroSection extends StatelessWidget {
             }).toList(),
           ),
           const SizedBox(height: AMSpacing.lg),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Image.asset(
-                selectedBeastImagePath,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: AMAssetImage(
+                    path: selectedBeastImagePath,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    fallbackIcon: Icons.pets,
+                    fallbackIconSize: 72,
+                  ),
+                ),
               ),
             ),
           ),
           const SizedBox(height: AMSpacing.md),
           Center(child: Text(selectedBeastName, style: AMTextStyles.title)),
           const SizedBox(height: AMSpacing.lg),
-          Text('Overall Beast Progress', style: AMTextStyles.subtitle),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Overall Beast Progress',
+                  style: AMTextStyles.subtitle,
+                ),
+              ),
+              Text(
+                '${(overallProgress * 100).toStringAsFixed(1)}%',
+                style: AMTextStyles.title,
+              ),
+            ],
+          ),
           const SizedBox(height: AMSpacing.sm),
           AMProgressBar(progress: overallProgress),
-          const SizedBox(height: AMSpacing.sm),
-          Text(
-            '${(overallProgress * 100).toStringAsFixed(1)}%',
-            style: AMTextStyles.body,
-          ),
           const SizedBox(height: AMSpacing.lg),
           Text(
-            'Beast Lv. $beastLevel / $maxBeastLevel',
+            'Beast Lv. $beastLevel / '
+            '$maxBeastLevel',
             style: AMTextStyles.subtitle,
           ),
           const SizedBox(height: AMSpacing.sm),
           Row(
             children: [
-              IconButton(
+              IconButton.filledTonal(
+                tooltip: 'Decrease Beast level',
                 onPressed: beastLevel > 1 ? onDecreaseLevel : null,
                 icon: const Icon(Icons.remove),
               ),
+              const SizedBox(width: AMSpacing.md),
               Expanded(child: AMProgressBar(progress: beastLevelProgress)),
-              IconButton(
+              const SizedBox(width: AMSpacing.md),
+              IconButton.filled(
+                tooltip: 'Increase Beast level',
                 onPressed: beastLevel < maxBeastLevel ? onIncreaseLevel : null,
                 icon: const Icon(Icons.add),
               ),
@@ -353,23 +349,12 @@ class _HeroSection extends StatelessWidget {
             '${(beastLevelProgress * 100).toStringAsFixed(1)}%',
             style: AMTextStyles.body,
           ),
+          const SizedBox(height: AMSpacing.xs),
           Text(
-            'Beast Level is recorded but does not contribute to '
-            'Beast Progress.',
+            'Beast Level is recorded but does not contribute '
+            'to Beast Progress.',
             style: AMTextStyles.muted,
           ),
-          if (hasUnsavedChanges) ...[
-            const SizedBox(height: AMSpacing.sm),
-            const Text(
-              '● Unsaved changes',
-              style: TextStyle(
-                color: Colors.orange,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: AMSpacing.md),
-            AMSaveCancelBar(onSave: onSave, onCancel: onCancel),
-          ],
         ],
       ),
     );
@@ -391,6 +376,7 @@ class _SubProgressCard extends StatelessWidget {
   final double skillsProgress;
   final double talentsProgress;
   final double skinsProgress;
+
   final double skillsWeight;
   final double talentsWeight;
   final double skinsWeight;
@@ -573,7 +559,15 @@ class _SkillsOverviewCard extends StatelessWidget {
             for (final skill in previewSkills) ...[
               Row(
                 children: [
-                  const Icon(Icons.pets, size: 18),
+                  ClipOval(
+                    child: AMAssetImage(
+                      path: AMAssets.beast.skill(skill.id),
+                      size: 28,
+                      fit: BoxFit.cover,
+                      fallbackIcon: Icons.pets,
+                      fallbackIconSize: 16,
+                    ),
+                  ),
                   const SizedBox(width: AMSpacing.sm),
                   Expanded(child: Text(skill.name, style: AMTextStyles.body)),
                   Text(
@@ -613,6 +607,8 @@ class _TalentOverviewCard extends StatelessWidget {
       return sum + (state.talentLevels[talent.id] ?? 0);
     });
 
+    final previewTalents = trackedTalents.take(7).toList();
+
     return AMCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -625,21 +621,68 @@ class _TalentOverviewCard extends StatelessWidget {
             style: AMTextStyles.muted,
           ),
           const SizedBox(height: AMSpacing.sm),
-          Text('Tracked Talent Levels: $totalLevels', style: AMTextStyles.body),
-          const SizedBox(height: AMSpacing.lg),
-          const Center(
-            child: Text(
-              '      🟢\n'
-              '   🟢   🟢\n'
-              '      🟣\n'
-              '   🟢   🟢\n'
-              '      🟣\n'
-              '   🟢   🟢\n'
-              '      🟠',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 28, height: 1.4),
-            ),
+          Text(
+            'Tracked Talent Levels: '
+            '$totalLevels',
+            style: AMTextStyles.body,
           ),
+          const SizedBox(height: AMSpacing.lg),
+          if (previewTalents.isEmpty)
+            Text(
+              'No Beast talents are currently tracked.',
+              style: AMTextStyles.muted,
+            )
+          else
+            Wrap(
+              spacing: AMSpacing.md,
+              runSpacing: AMSpacing.md,
+              children: previewTalents.map((talent) {
+                return SizedBox(
+                  width: 100,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 58,
+                        height: 58,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        child: ClipOval(
+                          child: AMAssetImage(
+                            path: AMAssets.beast.talent(
+                              beastType: state.selectedBeast,
+                              talentId: talent.id,
+                            ),
+                            size: 52,
+                            fit: BoxFit.cover,
+                            fallbackIcon: Icons.auto_awesome,
+                            fallbackIconSize: 24,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AMSpacing.xs),
+                      Text(
+                        talent.name,
+                        style: AMTextStyles.body,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '${state.talentLevels[talent.id] ?? 0}'
+                        ' / '
+                        '${talent.maxLevel}',
+                        style: AMTextStyles.muted,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
         ],
       ),
     );
@@ -687,25 +730,20 @@ class _SkinsOverviewCard extends StatelessWidget {
                   width: 110,
                   child: Column(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: Image.asset(
-                            _skinImagePath(
-                              beastType: state.selectedBeast,
-                              skinId: skin.id,
-                            ),
-                            fit: BoxFit.cover,
-                            alignment: Alignment.topCenter,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                alignment: Alignment.center,
-                                color: Colors.black26,
-                                child: const Icon(Icons.pets, size: 36),
-                              );
-                            },
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: AMAssetImage(
+                          path: AMAssets.beast.skin(
+                            beastType: state.selectedBeast,
+                            skinId: skin.id,
                           ),
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                          borderRadius: BorderRadius.circular(12),
+                          fallbackIcon: Icons.pets,
+                          fallbackIconSize: 36,
                         ),
                       ),
                       const SizedBox(height: AMSpacing.xs),
@@ -757,21 +795,14 @@ String _nameForBeast(BeastType beastType) {
   switch (beastType) {
     case BeastType.panda:
       return 'Panda';
+
     case BeastType.dragon:
       return 'Dragon';
+
     case BeastType.pegasus:
       return 'Pegasus';
+
     case BeastType.phoenix:
       return 'Phoenix';
   }
-}
-
-String _portraitPathForBeast(BeastType beastType) {
-  return 'assets/images/beasts/${beastType.name}.webp';
-}
-
-String _skinImagePath({required BeastType beastType, required String skinId}) {
-  return 'assets/images/skins/'
-      '${beastType.name}/'
-      '$skinId.webp';
 }

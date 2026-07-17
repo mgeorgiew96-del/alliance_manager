@@ -107,17 +107,10 @@ class _Header extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: AMTextStyles.subtitle,
-              ),
-              if (description != null &&
-                  description!.trim().isNotEmpty) ...[
+              Text(title, style: AMTextStyles.subtitle),
+              if (description != null && description!.trim().isNotEmpty) ...[
                 const SizedBox(height: AMSpacing.xs),
-                Text(
-                  description!,
-                  style: AMTextStyles.muted,
-                ),
+                Text(description!, style: AMTextStyles.muted),
               ],
             ],
           ),
@@ -125,14 +118,8 @@ class _Header extends StatelessWidget {
         const SizedBox(width: AMSpacing.sm),
         Column(
           children: [
-            Switch(
-              value: isTracked,
-              onChanged: onTrackedChanged,
-            ),
-            Text(
-              isTracked ? 'Tracked' : 'Ignored',
-              style: AMTextStyles.muted,
-            ),
+            Switch(value: isTracked, onChanged: onTrackedChanged),
+            Text(isTracked ? 'Tracked' : 'Ignored', style: AMTextStyles.muted),
           ],
         ),
       ],
@@ -164,10 +151,7 @@ class _TargetLevelEditor extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'TARGET LEVEL',
-          style: AMTextStyles.body,
-        ),
+        Text('TARGET LEVEL', style: AMTextStyles.body),
         const SizedBox(height: AMSpacing.xs),
         Text(
           'Valid range: $minimumLevel–$maximumLevel',
@@ -189,15 +173,10 @@ class _TargetLevelEditor extends StatelessWidget {
                   horizontal: AMSpacing.sm,
                 ),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                  ),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  '$targetLevel',
-                  style: AMTextStyles.subtitle,
-                ),
+                child: Text('$targetLevel', style: AMTextStyles.subtitle),
               ),
             ),
             IconButton(
@@ -228,10 +207,7 @@ class _PriorityEditor extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'PRIORITY',
-          style: AMTextStyles.body,
-        ),
+        Text('PRIORITY', style: AMTextStyles.body),
         const SizedBox(height: AMSpacing.sm),
         IgnorePointer(
           ignoring: !enabled,
@@ -244,10 +220,7 @@ class _PriorityEditor extends StatelessWidget {
                 return ChoiceChip(
                   selected: priority == value,
                   label: Text(_priorityLabel(value)),
-                  avatar: Icon(
-                    _priorityIcon(value),
-                    size: 18,
-                  ),
+                  avatar: Icon(_priorityIcon(value), size: 18),
                   onSelected: (_) {
                     onChanged(value);
                   },

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AMLogo extends StatelessWidget {
-  const AMLogo({
-    super.key,
-    this.size = 90,
-  });
+  const AMLogo({super.key, this.size = 90});
 
   final double size;
 
@@ -16,10 +13,7 @@ class AMLogo extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: const Color(0xFF152238),
-        border: Border.all(
-          color: const Color(0xFFD4AF37),
-          width: 2,
-        ),
+        border: Border.all(color: const Color(0xFFD4AF37), width: 2),
         boxShadow: const [
           BoxShadow(
             color: Colors.black54,
@@ -28,11 +22,7 @@ class AMLogo extends StatelessWidget {
           ),
         ],
       ),
-      child: const Icon(
-        Icons.shield,
-        color: Color(0xFFD4AF37),
-        size: 48,
-      ),
+      child: const Icon(Icons.shield, color: Color(0xFFD4AF37), size: 48),
     );
   }
 }

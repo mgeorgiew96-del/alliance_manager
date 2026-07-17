@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AMProgressBar extends StatelessWidget {
-  const AMProgressBar({
-    super.key,
-    required this.progress,
-    this.height = 10,
-  });
+  const AMProgressBar({super.key, required this.progress, this.height = 10});
 
   final double progress;
   final double height;

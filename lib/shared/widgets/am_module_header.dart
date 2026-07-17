@@ -23,16 +23,11 @@ class AMModuleHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: AMTextStyles.title,
-        ),
+        Text(title, style: AMTextStyles.title),
 
         const SizedBox(height: AMSpacing.md),
 
-        AMProgressBar(
-          progress: progress,
-        ),
+        AMProgressBar(progress: progress),
 
         const SizedBox(height: AMSpacing.sm),
 
@@ -43,19 +38,13 @@ class AMModuleHeader extends StatelessWidget {
 
         const SizedBox(height: AMSpacing.sm),
 
-        Text(
-          'Last Updated: $lastUpdated',
-          style: AMTextStyles.muted,
-        ),
+        Text('Last Updated: $lastUpdated', style: AMTextStyles.muted),
 
         if (hasUnsavedChanges) ...[
           const SizedBox(height: AMSpacing.sm),
           const Text(
             '● Unsaved changes',
-            style: TextStyle(
-              color: Colors.orange,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
           ),
         ],
 

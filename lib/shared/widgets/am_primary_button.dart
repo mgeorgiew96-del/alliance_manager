@@ -25,10 +25,7 @@ class AMPrimaryButton extends StatelessWidget {
           elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
-            side: const BorderSide(
-              color: Color(0xFFD4AF37),
-              width: 1.4,
-            ),
+            side: const BorderSide(color: Color(0xFFD4AF37), width: 1.4),
           ),
         ),
         child: icon == null

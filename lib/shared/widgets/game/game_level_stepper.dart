@@ -31,10 +31,7 @@ class GameLevelStepper extends StatelessWidget {
           onPressed: canDecrease ? onDecrease : null,
           icon: const Icon(Icons.remove_circle_outline),
         ),
-        Text(
-          '$level / $maxLevel',
-          style: AMTextStyles.body,
-        ),
+        Text('$level / $maxLevel', style: AMTextStyles.body),
         const SizedBox(width: AMSpacing.sm),
         IconButton(
           onPressed: canIncrease ? onIncrease : null,

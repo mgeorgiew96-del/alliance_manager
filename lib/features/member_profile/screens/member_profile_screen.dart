@@ -9,9 +9,16 @@ import '../../../shared/widgets/am_card.dart';
 import '../../../shared/widgets/am_castle_module_card.dart';
 import '../../../shared/widgets/am_page.dart';
 import '../../../shared/widgets/am_primary_button.dart';
+import '../../../shared/widgets/am_responsive_grid.dart';
+import '../../artifacts/controllers/artifacts_controller.dart';
+import '../../artifacts/services/artifact_progress_service.dart';
 import '../../beast/controllers/beast_controller.dart';
 import '../../beast/providers/beast_progress_config_provider.dart';
 import '../../beast/services/beast_progress_service.dart';
+import '../../equipment/controllers/equipment_controller.dart';
+import '../../equipment/providers/equipment_progress_config_provider.dart';
+import '../../equipment/services/equipment_progress_service.dart';
+import '../../../shared/constants/am_assets.dart';
 
 class MemberProfileScreen extends ConsumerWidget {
   const MemberProfileScreen({super.key, required this.amId});
@@ -23,6 +30,7 @@ class MemberProfileScreen extends ConsumerWidget {
     final member = mockMembers.firstWhere((member) => member.amId == amId);
 
     final beastState = ref.watch(beastControllerProvider);
+
     final beastConfig = ref.watch(beastProgressConfigProvider);
 
     final beastProgress = beastState.when(
@@ -35,6 +43,131 @@ class MemberProfileScreen extends ConsumerWidget {
       loading: () => 0.0,
       error: (error, stackTrace) => 0.0,
     );
+
+    final equipmentState = ref.watch(equipmentControllerProvider);
+
+    final equipmentConfig = ref.watch(equipmentProgressConfigProvider);
+
+    final equipmentProgress = EquipmentProgressService.calculateOverallProgress(
+      state: equipmentState,
+      config: equipmentConfig,
+    );
+
+    final artifactsState = ref.watch(artifactsControllerProvider);
+
+    final artifactsProgress = artifactsState.when(
+      data: (state) {
+        return ArtifactProgressService.overallProgress(state: state);
+      },
+      loading: () => 0.0,
+      error: (error, stackTrace) => 0.0,
+    );
+
+    final castleModules = <Widget>[
+      AMCastleModuleCard(
+        title: 'Beast',
+        description: 'Manage Beast level, skills, talents, and skins.',
+        icon: Icons.pets,
+        imagePath: AMAssets.common.moduleIcon('beast'),
+        progress: beastProgress,
+        onOpen: () {
+          context.go('/member/$amId/beast');
+        },
+      ),
+      AMCastleModuleCard(
+        title: 'Equipment',
+        description:
+            'Weapons, helmets, belts, clothes, accessories, '
+            'boots, enhancements, and jewels.',
+        icon: Icons.shield,
+        imagePath: AMAssets.common.moduleIcon('equipment'),
+        progress: equipmentProgress,
+        onOpen: () {
+          context.go('/member/$amId/equipment');
+        },
+      ),
+      AMCastleModuleCard(
+        title: 'Artifacts',
+        description:
+            'Track selected artifacts, crowns, levels, stars, '
+            'and gold rank progression.',
+        icon: Icons.workspace_premium,
+        imagePath: AMAssets.common.moduleIcon('artifacts'),
+        progress: artifactsProgress,
+        onOpen: () {
+          context.go('/member/$amId/artifacts');
+        },
+      ),
+      AMCastleModuleCard(
+        title: 'Colossus',
+        description:
+            'Track troop-dependent Colossus stats and special '
+            'skills.',
+        icon: Icons.account_tree,
+        imagePath: AMAssets.common.moduleIcon('colossus'),
+        progress: 0,
+        isAvailable: false,
+        onOpen: () {},
+      ),
+      AMCastleModuleCard(
+        title: 'Mystic',
+        description:
+            'Track frontline, backline, and Angels Mystic '
+            'progress.',
+        icon: Icons.auto_awesome,
+        imagePath: AMAssets.common.moduleIcon('mystic'),
+        progress: 0,
+        isAvailable: false,
+        onOpen: () {},
+      ),
+      AMCastleModuleCard(
+        title: 'High Tech',
+        description: 'Track the complete High Tech tree and priority nodes.',
+        icon: Icons.memory,
+        imagePath: AMAssets.common.moduleIcon('high_tech'),
+        progress: 0,
+        isAvailable: false,
+        onOpen: () {},
+      ),
+      AMCastleModuleCard(
+        title: 'Totem',
+        description: 'Track selected Totem level and skill progress.',
+        icon: Icons.park,
+        imagePath: AMAssets.common.moduleIcon('totem'),
+        progress: 0,
+        isAvailable: false,
+        onOpen: () {},
+      ),
+      AMCastleModuleCard(
+        title: 'Titan',
+        description: 'Track Titan level, tier, phases, steps, and talents.',
+        icon: Icons.security,
+        imagePath: AMAssets.common.moduleIcon('titan'),
+        progress: 0,
+        isAvailable: false,
+        onOpen: () {},
+      ),
+      AMCastleModuleCard(
+        title: 'Decorations',
+        description:
+            'Track Garden, Decoration Sets, Statues, and '
+            'Illusions.',
+        icon: Icons.castle,
+        imagePath: AMAssets.common.moduleIcon('decorations'),
+        progress: 0,
+        isAvailable: false,
+        onOpen: () {},
+      ),
+      AMCastleModuleCard(
+        title: 'Statistics',
+        description: 'Review general, event, and troop-specific stats.',
+        icon: Icons.bar_chart,
+        progress: 0,
+        isAvailable: false,
+        imagePath: AMAssets.common.moduleIcon('statistics'),
+        onOpen: () {},
+      ),
+    ];
 
     return AMPage(
       child: Column(
@@ -81,109 +214,11 @@ class MemberProfileScreen extends ConsumerWidget {
             style: AMTextStyles.muted,
           ),
           const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Beast',
-            description: 'Manage Beast level, skills, talents, and skins.',
-            icon: Icons.pets,
-            progress: beastProgress,
-            onOpen: () {
-              context.go('/member/$amId/beast');
-            },
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Equipment',
-            description:
-                'Weapons, helmets, belts, clothes, accessories, '
-                'boots, enhancements, and jewels.',
-            icon: Icons.shield,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Artifacts',
-            description:
-                'Track equipped artifacts, crowns, levels, and '
-                'stars.',
-            icon: Icons.workspace_premium,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Colossus',
-            description:
-                'Track troop-dependent Colossus stats and special '
-                'skills.',
-            icon: Icons.account_tree,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Mystic',
-            description:
-                'Track frontline, backline, and Angels Mystic '
-                'progress.',
-            icon: Icons.auto_awesome,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'High Tech',
-            description:
-                'Track the complete High Tech tree and priority '
-                'nodes.',
-            icon: Icons.memory,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Totem',
-            description: 'Track selected Totem level and skill progress.',
-            icon: Icons.park,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Titan',
-            description:
-                'Track Titan level, tier, phases, steps, and '
-                'talents.',
-            icon: Icons.security,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Decorations',
-            description:
-                'Track Garden, Decoration Sets, Statues, and '
-                'Illusions.',
-            icon: Icons.castle,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMCastleModuleCard(
-            title: 'Statistics',
-            description: 'Review general, event, and troop-specific stats.',
-            icon: Icons.bar_chart,
-            progress: 0,
-            isAvailable: false,
-            onOpen: () {},
+          AMResponsiveGrid(
+            mobileColumns: 1,
+            tabletColumns: 2,
+            desktopColumns: 2,
+            children: castleModules,
           ),
           const SizedBox(height: AMSpacing.lg),
           AMPrimaryButton(
@@ -231,5 +266,6 @@ String _capitalise(String value) {
     return value;
   }
 
-  return '${value[0].toUpperCase()}${value.substring(1)}';
+  return '${value[0].toUpperCase()}'
+      '${value.substring(1)}';
 }

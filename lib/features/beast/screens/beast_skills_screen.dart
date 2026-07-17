@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../shared/constants/am_assets.dart';
 import '../../../shared/theme/am_spacing.dart';
 import '../../../shared/theme/am_text_styles.dart';
+import '../../../shared/widgets/am_asset_image.dart';
 import '../../../shared/widgets/am_card.dart';
 import '../../../shared/widgets/am_module_header.dart';
 import '../../../shared/widgets/am_page.dart';
@@ -12,10 +15,7 @@ import '../controllers/beast_controller.dart';
 import '../models/beast_state.dart';
 
 class BeastSkillsScreen extends ConsumerWidget {
-  const BeastSkillsScreen({
-    super.key,
-    required this.amId,
-  });
+  const BeastSkillsScreen({super.key, required this.amId});
 
   final String amId;
 
@@ -24,28 +24,25 @@ class BeastSkillsScreen extends ConsumerWidget {
     final beastState = ref.watch(beastControllerProvider);
 
     return beastState.when(
-      loading: () => const AMPage(
-        child: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const AMPage(child: Center(child: CircularProgressIndicator())),
       error: (error, stackTrace) => AMPage(
         child: Center(
-          child: Text(
-            'Failed to load Beast skills.',
-            style: AMTextStyles.body,
-          ),
+          child: Text('Failed to load Beast skills.', style: AMTextStyles.body),
         ),
       ),
-      data: (state) => _BeastSkillsView(state: state),
+      data: (state) {
+        return _BeastSkillsView(state: state, amId: amId);
+      },
     );
   }
 }
 
 class _BeastSkillsView extends ConsumerWidget {
-  const _BeastSkillsView({
-    required this.state,
-  });
+  const _BeastSkillsView({required this.state, required this.amId});
 
   final BeastState state;
+  final String amId;
 
   double get _progress {
     var current = 0;
@@ -53,11 +50,14 @@ class _BeastSkillsView extends ConsumerWidget {
 
     for (final skill in _skillDefinitions) {
       final level = state.skillLevels[skill.id] ?? 1;
+
       current += level - 1;
       maximum += skill.maxLevel - 1;
     }
 
-    if (maximum == 0) return 0;
+    if (maximum == 0) {
+      return 0;
+    }
 
     return current / maximum;
   }
@@ -85,6 +85,12 @@ class _BeastSkillsView extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _BackButton(
+              onPressed: () {
+                context.go('/member/$amId/beast');
+              },
+            ),
+            const SizedBox(height: AMSpacing.md),
             AMModuleHeader(
               title: 'BEAST SKILLS',
               progress: _progress,
@@ -102,19 +108,42 @@ class _BeastSkillsView extends ConsumerWidget {
               _SkillCard(
                 skill: skill,
                 level: state.skillLevels[skill.id] ?? 1,
-                onIncrease: () => controller.increaseSkill(
-                  skillId: skill.id,
-                  maxLevel: skill.maxLevel,
-                ),
-                onDecrease: () => controller.decreaseSkill(
-                  skillId: skill.id,
-                ),
+                onIncrease: () {
+                  controller.increaseSkill(
+                    skillId: skill.id,
+                    maxLevel: skill.maxLevel,
+                  );
+                },
+                onDecrease: () {
+                  controller.decreaseSkill(skillId: skill.id);
+                },
               ),
               const SizedBox(height: AMSpacing.md),
             ],
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BackButton extends StatelessWidget {
+  const _BackButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+          tooltip: 'Back to Beast',
+          onPressed: onPressed,
+          icon: const Icon(Icons.arrow_back),
+        ),
+        const SizedBox(width: AMSpacing.xs),
+        Text('Back to Beast', style: AMTextStyles.body),
+      ],
     );
   }
 }
@@ -133,45 +162,134 @@ class _SkillCard extends StatelessWidget {
   final VoidCallback onDecrease;
 
   double get _progress {
-    return (level - 1) / (skill.maxLevel - 1);
+    final availableLevels = skill.maxLevel - skill.minLevel;
+
+    if (availableLevels <= 0) {
+      return 0;
+    }
+
+    final completedLevels = level - skill.minLevel;
+
+    return (completedLevels / availableLevels).clamp(0, 1).toDouble();
+  }
+
+  double get _currentBonus {
+    final gainedLevels = level - skill.minLevel;
+
+    return skill.baseValue + (gainedLevels * skill.stepValue);
+  }
+
+  bool get _isMaxed {
+    return level >= skill.maxLevel;
+  }
+
+  String get _currentBonusText {
+    return '${_currentBonus.toStringAsFixed(1)}%';
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return AMCard(
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            skill.name,
-            style: AMTextStyles.subtitle,
-          ),
-          const SizedBox(height: AMSpacing.xs),
-          Text(
-            'Lv. $level / ${skill.maxLevel}',
-            style: AMTextStyles.body,
-          ),
-          const SizedBox(height: AMSpacing.md),
-          AMProgressBar(progress: _progress),
-          const SizedBox(height: AMSpacing.sm),
-          Text(
-            '${(_progress * 100).toStringAsFixed(1)}%',
-            style: AMTextStyles.body,
-          ),
-          const SizedBox(height: AMSpacing.md),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: level > 1 ? onDecrease : null,
-                icon: const Icon(Icons.remove),
+          Container(
+            width: 72,
+            height: 72,
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: _isMaxed ? Colors.green : colorScheme.primary,
+                width: _isMaxed ? 2 : 1.4,
               ),
-              const SizedBox(width: AMSpacing.md),
-              IconButton(
-                onPressed: level < skill.maxLevel ? onIncrease : null,
-                icon: const Icon(Icons.add),
+              boxShadow: [
+                if (_isMaxed)
+                  BoxShadow(
+                    color: Colors.green.withValues(alpha: 0.22),
+                    blurRadius: 14,
+                  ),
+              ],
+            ),
+            child: ClipOval(
+              child: AMAssetImage(
+                path: AMAssets.beast.skill(skill.id),
+                size: 64,
+                fit: BoxFit.cover,
+                fallbackIcon: Icons.auto_awesome,
+                fallbackIconSize: 30,
               ),
-            ],
+            ),
+          ),
+          const SizedBox(width: AMSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(skill.name, style: AMTextStyles.subtitle),
+                    ),
+                    if (_isMaxed)
+                      const Text(
+                        'MAX',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: AMSpacing.xs),
+                Text(
+                  'Lv. $level / ${skill.maxLevel}',
+                  style: AMTextStyles.body,
+                ),
+                const SizedBox(height: AMSpacing.md),
+                AMProgressBar(progress: _progress),
+                const SizedBox(height: AMSpacing.md),
+                Text(skill.description, style: AMTextStyles.body),
+                const SizedBox(height: AMSpacing.md),
+                Text('CURRENT BONUS', style: AMTextStyles.muted),
+                const SizedBox(height: AMSpacing.xs),
+                Text(_currentBonusText, style: AMTextStyles.title),
+                const SizedBox(height: AMSpacing.md),
+                Row(
+                  children: [
+                    IconButton.filledTonal(
+                      tooltip: 'Decrease level',
+                      onPressed: level > skill.minLevel ? onDecrease : null,
+                      icon: const Icon(Icons.remove),
+                    ),
+                    const SizedBox(width: AMSpacing.md),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AMSpacing.sm,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
+                        ),
+                        child: Text('$level', style: AMTextStyles.title),
+                      ),
+                    ),
+                    const SizedBox(width: AMSpacing.md),
+                    IconButton.filled(
+                      tooltip: 'Increase level',
+                      onPressed: level < skill.maxLevel ? onIncrease : null,
+                      icon: const Icon(Icons.add),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -183,93 +301,136 @@ class _SkillDefinition {
   const _SkillDefinition({
     required this.id,
     required this.name,
-    required this.maxLevel,
+    required this.description,
+    required this.baseValue,
+    required this.stepValue,
   });
 
   final String id;
   final String name;
-  final int maxLevel;
+  final String description;
+
+  final double baseValue;
+  final double stepValue;
+
+  int get minLevel => 1;
+  int get maxLevel => 30;
 }
 
 const _skillDefinitions = [
   _SkillDefinition(
     id: 'march_speed_up',
     name: 'March Speed Up',
-    maxLevel: 30,
+    description: 'Raises marching army speed.',
+    baseValue: 2.0,
+    stepValue: 1.0,
   ),
   _SkillDefinition(
     id: 'steel_skin',
     name: 'Steel Skin',
-    maxLevel: 30,
+    description:
+        'When troops are attacked by Archers, damage taken is reduced.',
+    baseValue: 2.0,
+    stepValue: 1.1,
   ),
   _SkillDefinition(
     id: 'anti_cavalry',
     name: 'Anti-Cavalry',
-    maxLevel: 30,
+    description: 'For troops attacking Cavalry, damage is increased.',
+    baseValue: 1.6,
+    stepValue: 0.9,
   ),
   _SkillDefinition(
     id: 'resist_magic',
     name: 'Resist Magic',
-    maxLevel: 30,
+    description: 'When troops are attacked by Mages, damage taken is reduced.',
+    baseValue: 2.0,
+    stepValue: 1.1,
   ),
   _SkillDefinition(
     id: 'anti_infantry',
     name: 'Anti-Infantry',
-    maxLevel: 30,
+    description: 'For troops attacking Infantry, damage is increased.',
+    baseValue: 1.6,
+    stepValue: 0.9,
   ),
   _SkillDefinition(
     id: 'smothered_flare',
     name: 'Smothered Flare',
-    maxLevel: 30,
+    description: 'When troops are attacked by Angels, damage taken is reduced.',
+    baseValue: 2.0,
+    stepValue: 1.1,
   ),
   _SkillDefinition(
     id: 'wounded_limit',
     name: 'Wounded Limit',
-    maxLevel: 30,
+    description:
+        'Increases the maximum limit of wounded soldiers in the Hospital.',
+    baseValue: 13.0,
+    stepValue: 1.0,
   ),
   _SkillDefinition(
     id: 'life_source',
     name: 'Life Source',
-    maxLevel: 30,
+    description: 'Raises the maximum HP of all armies.',
+    baseValue: 1.6,
+    stepValue: 0.8,
   ),
   _SkillDefinition(
     id: 'force_expansion',
     name: 'Force Expansion',
-    maxLevel: 30,
+    description: 'Raises the maximum size of the marching army.',
+    baseValue: 1.0,
+    stepValue: 0.5,
   ),
   _SkillDefinition(
     id: 'attack_expert',
     name: 'Attack Expert',
-    maxLevel: 30,
+    description: 'Raises all armies’ Attack.',
+    baseValue: 1.6,
+    stepValue: 0.8,
   ),
   _SkillDefinition(
     id: 'quick_heal',
     name: 'Quick Heal',
-    maxLevel: 30,
+    description: 'Raises the healing speed for wounded soldiers.',
+    baseValue: 1.6,
+    stepValue: 0.8,
   ),
   _SkillDefinition(
     id: 'recruitment_speed_up',
     name: 'Recruitment Speed Up',
-    maxLevel: 30,
+    description: 'Raises soldier recruitment speed.',
+    baseValue: 1.0,
+    stepValue: 0.5,
   ),
   _SkillDefinition(
     id: 'wounded_conversion',
     name: 'Wounded Conversion',
-    maxLevel: 30,
+    description:
+        'Increases the ratio of killed soldiers converted to wounded soldiers at the end of battle.',
+    baseValue: 0.8,
+    stepValue: 0.4,
   ),
   _SkillDefinition(
     id: 'anti_angel',
     name: 'Anti-Angel',
-    maxLevel: 30,
+    description: 'For troops attacking Angels, damage is increased.',
+    baseValue: 1.6,
+    stepValue: 0.9,
   ),
   _SkillDefinition(
     id: 'vigor_star',
     name: 'Vigor Star',
-    maxLevel: 30,
+    description: 'Decreases recovery time for each point of Vigor.',
+    baseValue: 2.0,
+    stepValue: 1.0,
   ),
   _SkillDefinition(
     id: 'level_up_booster',
     name: 'Level Up Booster',
-    maxLevel: 30,
+    description: 'Increases XP gained from defeating Monsters.',
+    baseValue: 1.6,
+    stepValue: 0.8,
   ),
 ];

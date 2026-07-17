@@ -1,39 +1,36 @@
 import 'package:flutter/material.dart';
 
 import '../theme/am_spacing.dart';
-import 'am_primary_button.dart';
 
 class AMSaveCancelBar extends StatelessWidget {
   const AMSaveCancelBar({
     super.key,
     required this.onSave,
     required this.onCancel,
-    this.saveText = 'SAVE',
-    this.cancelText = 'CANCEL',
+    this.saveEnabled = true,
   });
 
-  final VoidCallback onSave;
-  final VoidCallback onCancel;
-  final String saveText;
-  final String cancelText;
+  final VoidCallback? onSave;
+  final VoidCallback? onCancel;
+  final bool saveEnabled;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
-          child: AMPrimaryButton(
-            text: saveText,
-            icon: Icons.save,
-            onPressed: onSave,
+          child: OutlinedButton.icon(
+            onPressed: onCancel,
+            icon: const Icon(Icons.close),
+            label: const Text('CANCEL'),
           ),
         ),
         const SizedBox(width: AMSpacing.md),
         Expanded(
-          child: AMPrimaryButton(
-            text: cancelText,
-            icon: Icons.close,
-            onPressed: onCancel,
+          child: FilledButton.icon(
+            onPressed: saveEnabled ? onSave : null,
+            icon: const Icon(Icons.save),
+            label: const Text('SAVE'),
           ),
         ),
       ],

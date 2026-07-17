@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/am_spacing.dart';
 import '../theme/am_text_styles.dart';
+import 'am_asset_image.dart';
 import 'am_card.dart';
 import 'am_progress_bar.dart';
 
@@ -9,15 +10,24 @@ class AMCastleModuleCard extends StatelessWidget {
   const AMCastleModuleCard({
     super.key,
     required this.title,
-    required this.icon,
     required this.progress,
     required this.onOpen,
+    this.icon,
+    this.imagePath,
     this.description,
     this.isAvailable = true,
-  });
+  }) : assert(
+         icon != null || imagePath != null,
+         'Provide either icon or imagePath.',
+       );
 
   final String title;
-  final IconData icon;
+
+  /// Optional Material icon used as fallback or when no artwork exists.
+  final IconData? icon;
+
+  /// Optional custom module artwork.
+  final String? imagePath;
 
   /// Progress from 0.0 to 1.0.
   final double progress;
@@ -70,6 +80,10 @@ class AMCastleModuleCard extends StatelessWidget {
     return Icons.verified_outlined;
   }
 
+  IconData get _fallbackIcon {
+    return icon ?? Icons.castle_outlined;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AMCard(
@@ -81,7 +95,10 @@ class AMCastleModuleCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, size: 32),
+                _ModuleArtwork(
+                  imagePath: imagePath,
+                  fallbackIcon: _fallbackIcon,
+                ),
                 const SizedBox(width: AMSpacing.md),
                 Expanded(
                   child: Column(
@@ -129,6 +146,45 @@ class AMCastleModuleCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ModuleArtwork extends StatelessWidget {
+  const _ModuleArtwork({required this.imagePath, required this.fallbackIcon});
+
+  final String? imagePath;
+  final IconData fallbackIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: 72,
+      height: 72,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.primary, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.primary.withValues(alpha: 0.14),
+            blurRadius: 12,
+          ),
+        ],
+      ),
+      child: imagePath == null
+          ? Icon(fallbackIcon, size: 34)
+          : AMAssetImage(
+              path: imagePath!,
+              width: 72,
+              height: 72,
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
+              borderRadius: BorderRadius.circular(15),
+              fallbackIcon: fallbackIcon,
+              fallbackIconSize: 34,
+            ),
     );
   }
 }

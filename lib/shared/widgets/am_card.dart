@@ -19,10 +19,7 @@ class AMCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AMColors.panel,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AMColors.gold,
-          width: 1.4,
-        ),
+        border: Border.all(color: AMColors.gold, width: 1.4),
         boxShadow: const [
           BoxShadow(
             color: Colors.black54,

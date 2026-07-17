@@ -41,9 +41,7 @@ class GameProgressBar extends StatelessWidget {
             value: progressValue,
             minHeight: 12,
             backgroundColor: AMColors.panelLight,
-            valueColor: const AlwaysStoppedAnimation<Color>(
-              AMColors.gold,
-            ),
+            valueColor: const AlwaysStoppedAnimation<Color>(AMColors.gold),
           ),
         ),
       ],

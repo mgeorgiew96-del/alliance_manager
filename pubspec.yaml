@@ -64,14 +64,28 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
-    - assets/images/beasts/
     - assets/images/banners/
     - assets/images/logo/
-    - assets/images/skins/panda/
-    - assets/images/skins/dragon/
-    - assets/images/skins/pegasus/
-    - assets/images/skins/phoenix/
-    
+ 
+
+   
+    - assets/images/beast/overview/
+    - assets/images/beast/skills/
+    - assets/images/beast/talents/panda/
+    - assets/images/beast/talents/dragon/
+    - assets/images/beast/talents/pegasus/
+    - assets/images/beast/talents/phoenix/
+    - assets/images/beast/skins/panda/
+    - assets/images/beast/skins/dragon/
+    - assets/images/beast/skins/pegasus/
+    - assets/images/beast/skins/phoenix/
+    - assets/images/equipment/slots/
+    - assets/images/artifacts/artifacts/
+    - assets/images/artifacts/crowns/
+    - assets/images/module_icons/
+    - assets/images/colossus/artwork/
+    - assets/images/colossus/skills/
+    - assets/images/colossus/special_skills/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
