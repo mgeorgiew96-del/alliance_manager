@@ -8,10 +8,7 @@ import '../../../shared/theme/am_text_styles.dart';
 import '../../../shared/widgets/am_card.dart';
 
 class AllianceSummaryCard extends StatelessWidget {
-  const AllianceSummaryCard({
-    super.key,
-    required this.members,
-  });
+  const AllianceSummaryCard({super.key, required this.members});
 
   final List<MemberModel> members;
 
@@ -34,10 +31,22 @@ class AllianceSummaryCard extends StatelessWidget {
         children: [
           const Text('Alliance Structure', style: AMTextStyles.subtitle),
           const SizedBox(height: AMSpacing.md),
-          _SummaryRow(label: 'Leader', value: '$r5 / ${mockAllianceConfiguration.maxR5}'),
-          _SummaryRow(label: 'Deputies', value: '$r4 / ${mockAllianceConfiguration.maxR4}'),
-          _SummaryRow(label: 'Officers', value: '$r3 / ${mockAllianceConfiguration.maxR3}'),
-          _SummaryRow(label: 'Elite', value: '$r2 / ${mockAllianceConfiguration.maxR2}'),
+          _SummaryRow(
+            label: 'Leader',
+            value: '$r5 / ${mockAllianceConfiguration.maxR5}',
+          ),
+          _SummaryRow(
+            label: 'Deputies',
+            value: '$r4 / ${mockAllianceConfiguration.maxR4}',
+          ),
+          _SummaryRow(
+            label: 'Officers',
+            value: '$r3 / ${mockAllianceConfiguration.maxR3}',
+          ),
+          _SummaryRow(
+            label: 'Elite',
+            value: '$r2 / ${mockAllianceConfiguration.maxR2}',
+          ),
           _SummaryRow(label: 'Members', value: '$r1'),
         ],
       ),
@@ -46,10 +55,7 @@ class AllianceSummaryCard extends StatelessWidget {
 }
 
 class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({
-    required this.label,
-    required this.value,
-  });
+  const _SummaryRow({required this.label, required this.value});
 
   final String label;
   final String value;

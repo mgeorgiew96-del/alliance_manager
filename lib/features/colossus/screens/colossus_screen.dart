@@ -75,10 +75,9 @@ class _ColossusScreenState extends ConsumerState<ColossusScreen> {
     return AMModuleOverview(
       title: 'Colossus',
       bannerPath: AMAssets.common.banner('colossus_banner'),
-      bannerTagline: 'Awaken ancient giants. Command unstoppable power.',
+      bannerTagline: '',
       description:
-          'Upgrade all four Colossi and choose two active Colossi. '
-          'Only active Colossi contribute to module progress.',
+          '',
       fallbackIcon: Icons.account_balance,
       onBack: () {
         context.go('/member/${widget.amId}');
@@ -232,7 +231,7 @@ class _OverallProgressCard extends StatelessWidget {
                     const SizedBox(height: AMSpacing.xs),
                     Text(
                       'Only tracked stats from the two active '
-                      'Colossi contribute.',
+                      'Colossus contribute.',
                       style: AMTextStyles.muted,
                     ),
                   ],
@@ -248,7 +247,7 @@ class _OverallProgressCard extends StatelessWidget {
           AMProgressBar(progress: progress),
           const SizedBox(height: AMSpacing.lg),
           _SummaryRow(
-            label: 'Active Colossi',
+            label: 'Active Colossus',
             value:
                 '${activeTypes.length} / '
                 '${ColossusDefinitions.activeColossusLimit}',
@@ -870,7 +869,7 @@ class _ReplaceActiveColossusDialogState
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Two Colossi are already active. Choose one to replace.'),
+          const Text('Two Colossus are already active. Choose one to replace.'),
           const SizedBox(height: AMSpacing.md),
           RadioGroup<ColossusType>(
             groupValue: _selectedType,

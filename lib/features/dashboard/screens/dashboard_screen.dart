@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/enums/member_rank.dart';
 import '../../../shared/enums/troop_type.dart';
+import '../../../shared/permissions/admin_permissions.dart';
 import '../../../shared/services/service_locator.dart';
 import '../../../shared/theme/am_spacing.dart';
 import '../../../shared/theme/am_text_styles.dart';
 import '../../../shared/widgets/am_card.dart';
 import '../../../shared/widgets/am_page.dart';
 import '../../../shared/widgets/am_primary_button.dart';
-import '../../../shared/permissions/admin_permissions.dart';
+import '../../artifacts/controllers/artifacts_controller.dart';
+import '../../artifacts/services/artifact_progress_service.dart';
+import '../../beast/controllers/beast_controller.dart';
+import '../../beast/providers/beast_progress_config_provider.dart';
+import '../../beast/services/beast_progress_service.dart';
+import '../../colossus/controllers/colossus_controller.dart';
+import '../../colossus/providers/colossus_progress_config_provider.dart';
+import '../../colossus/services/colossus_progress_service.dart';
+import '../../equipment/controllers/equipment_controller.dart';
+import '../../equipment/providers/equipment_progress_config_provider.dart';
+import '../../equipment/services/equipment_progress_service.dart';
+import '../../mystic/controllers/mystic_controller.dart';
+import '../../mystic/providers/mystic_progress_config_provider.dart';
+import '../../mystic/services/mystic_progress_service.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   String _rankLabel(MemberRank rank) {
@@ -43,7 +58,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final member = sessionService.member;
 
     if (member == null) {
@@ -64,6 +79,69 @@ class DashboardScreen extends StatelessWidget {
       );
     }
 
+    final beastState = ref.watch(beastControllerProvider);
+    final beastConfig = ref.watch(beastProgressConfigProvider);
+    final beastProgress = beastState.when(
+      data: (state) {
+        return BeastProgressService.calculateOverallProgress(
+          state: state,
+          config: beastConfig,
+        );
+      },
+      loading: () => 0.0,
+      error: (error, stackTrace) => 0.0,
+    );
+
+    final equipmentState = ref.watch(equipmentControllerProvider);
+    final equipmentConfig = ref.watch(equipmentProgressConfigProvider);
+    final equipmentProgress = EquipmentProgressService.calculateOverallProgress(
+      state: equipmentState,
+      config: equipmentConfig,
+    );
+
+    final artifactsState = ref.watch(artifactsControllerProvider);
+    final artifactsProgress = artifactsState.when(
+      data: (state) {
+        return ArtifactProgressService.overallProgress(state: state);
+      },
+      loading: () => 0.0,
+      error: (error, stackTrace) => 0.0,
+    );
+
+    final colossusState = ref.watch(colossusControllerProvider);
+    final colossusConfig = ref.watch(colossusProgressConfigProvider);
+    final colossusProgress = colossusState.when(
+      data: (state) {
+        return ColossusProgressService.calculate(
+          state: state,
+          config: colossusConfig,
+        );
+      },
+      loading: () => 0.0,
+      error: (error, stackTrace) => 0.0,
+    );
+
+    final mysticState = ref.watch(mysticControllerProvider);
+    final mysticConfig = ref.watch(mysticProgressConfigProvider);
+    final mysticProgress = mysticState.when(
+      data: (state) {
+        return MysticProgressService.calculateOverallProgress(
+          state: state,
+          config: mysticConfig,
+        );
+      },
+      loading: () => 0.0,
+      error: (error, stackTrace) => 0.0,
+    );
+
+    final liveOverallProgress = _averageProgress([
+      beastProgress,
+      equipmentProgress,
+      artifactsProgress,
+      colossusProgress,
+      mysticProgress,
+    ]);
+
     final canAccessAdministration = isAllianceAdministrator(member.rank);
 
     return AMPage(
@@ -75,7 +153,7 @@ class DashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome back, ${member.playerName}',
+                  'Welcome back, mighty ${member.playerName}',
                   style: AMTextStyles.title,
                 ),
                 const SizedBox(height: AMSpacing.sm),
@@ -100,14 +178,14 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 _InfoRow(
                   label: 'Overall Progress',
-                  value: '${member.overallProgress.toStringAsFixed(1)}%',
+                  value: '${(liveOverallProgress * 100).toStringAsFixed(1)}%',
                 ),
               ],
             ),
           ),
           const SizedBox(height: AMSpacing.md),
           const _DashboardCard(
-            title: 'Alliance Snapshot',
+            title: 'Alliance Overview',
             content:
                 'Members: 1 / 100\n'
                 'Pending requests: 0\n'
@@ -117,34 +195,17 @@ class DashboardScreen extends StatelessWidget {
           _DashboardCard(
             title: 'Quick Actions',
             content: canAccessAdministration
-                ? 'Members • Beast • Equipment • Titan • '
-                      'Statistics • Administration'
-                : 'Members • Beast • Equipment • Titan • '
-                      'Statistics',
+                ? 'Members • Beast • Equipment • Artifacts • Colossus • '
+                      'Mystic • Administration'
+                : 'Members • Beast • Equipment • Artifacts • Colossus • '
+                      'Mystic',
           ),
           const SizedBox(height: AMSpacing.md),
           const _DashboardCard(
             title: 'Notifications',
             content: 'No new notifications.',
           ),
-          const SizedBox(height: AMSpacing.lg),
-          AMPrimaryButton(
-            text: 'MEMBERS',
-            icon: Icons.people,
-            onPressed: () {
-              context.go('/members');
-            },
-          ),
-          if (canAccessAdministration) ...[
-            const SizedBox(height: AMSpacing.md),
-            AMPrimaryButton(
-              text: 'ADMINISTRATION',
-              icon: Icons.admin_panel_settings,
-              onPressed: () {
-                context.go('/admin');
-              },
-            ),
-          ],
+          
         ],
       ),
     );
@@ -192,4 +253,14 @@ class _DashboardCard extends StatelessWidget {
       ),
     );
   }
+}
+
+double _averageProgress(List<double> values) {
+  if (values.isEmpty) {
+    return 0;
+  }
+
+  final total = values.fold<double>(0, (sum, value) => sum + value);
+
+  return (total / values.length).clamp(0, 1).toDouble();
 }

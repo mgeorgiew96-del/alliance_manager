@@ -23,10 +23,7 @@ class BeastController extends AsyncNotifier<BeastState> {
     if (currentState == null) return;
 
     state = AsyncData(
-      currentState.copyWith(
-        selectedBeast: beastType,
-        hasUnsavedChanges: true,
-      ),
+      currentState.copyWith(selectedBeast: beastType, hasUnsavedChanges: true),
     );
   }
 
@@ -54,10 +51,7 @@ class BeastController extends AsyncNotifier<BeastState> {
     );
   }
 
-  void increaseSkill({
-    required String skillId,
-    required int maxLevel,
-  }) {
+  void increaseSkill({required String skillId, required int maxLevel}) {
     final currentState = _currentState;
     if (currentState == null) return;
 
@@ -75,9 +69,7 @@ class BeastController extends AsyncNotifier<BeastState> {
     );
   }
 
-  void decreaseSkill({
-    required String skillId,
-  }) {
+  void decreaseSkill({required String skillId}) {
     final currentState = _currentState;
     if (currentState == null) return;
 
@@ -95,10 +87,7 @@ class BeastController extends AsyncNotifier<BeastState> {
     );
   }
 
-  void increaseTalent({
-    required String talentId,
-    required int maxLevel,
-  }) {
+  void increaseTalent({required String talentId, required int maxLevel}) {
     final currentState = _currentState;
     if (currentState == null) return;
 
@@ -134,10 +123,7 @@ class BeastController extends AsyncNotifier<BeastState> {
     );
   }
 
-  void increaseSkin({
-    required String skinId,
-    required int maxLevel,
-  }) {
+  void increaseSkin({required String skinId, required int maxLevel}) {
     final currentState = _currentState;
     if (currentState == null) return;
 
@@ -148,10 +134,7 @@ class BeastController extends AsyncNotifier<BeastState> {
     updatedLevels[skinId] = currentLevel + 1;
 
     state = AsyncData(
-      currentState.copyWith(
-        skinLevels: updatedLevels,
-        hasUnsavedChanges: true,
-      ),
+      currentState.copyWith(skinLevels: updatedLevels, hasUnsavedChanges: true),
     );
   }
 
@@ -166,10 +149,7 @@ class BeastController extends AsyncNotifier<BeastState> {
     updatedLevels[skinId] = currentLevel - 1;
 
     state = AsyncData(
-      currentState.copyWith(
-        skinLevels: updatedLevels,
-        hasUnsavedChanges: true,
-      ),
+      currentState.copyWith(skinLevels: updatedLevels, hasUnsavedChanges: true),
     );
   }
 
@@ -182,10 +162,7 @@ class BeastController extends AsyncNotifier<BeastState> {
       lastUpdated: DateTime.now(),
     );
 
-    await _repository.saveBeastState(
-      amId: 'AM-1360-001',
-      state: savedState,
-    );
+    await _repository.saveBeastState(amId: 'AM-1360-001', state: savedState);
 
     state = AsyncData(savedState);
   }
@@ -193,13 +170,9 @@ class BeastController extends AsyncNotifier<BeastState> {
   Future<void> cancel() async {
     final savedState = await _repository.loadBeastState(amId: 'AM-1360-001');
 
-    state = AsyncData(
-      savedState.copyWith(hasUnsavedChanges: false),
-    );
+    state = AsyncData(savedState.copyWith(hasUnsavedChanges: false));
   }
 }
 
 final beastControllerProvider =
-    AsyncNotifierProvider<BeastController, BeastState>(
-  BeastController.new,
-);
+    AsyncNotifierProvider<BeastController, BeastState>(BeastController.new);

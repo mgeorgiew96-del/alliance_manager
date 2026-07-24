@@ -32,8 +32,8 @@ class AMNavigationTile extends StatelessWidget {
     final iconColor = isSelected
         ? colorScheme.primary
         : destination.isAvailable
-            ? null
-            : disabledColor;
+        ? null
+        : disabledColor;
 
     final horizontalPadding = isCompact ? AMSpacing.sm : AMSpacing.md;
     final verticalPadding = isCompact ? AMSpacing.sm : AMSpacing.md;
@@ -44,9 +44,7 @@ class AMNavigationTile extends StatelessWidget {
       padding: EdgeInsets.only(left: indent),
       child: Material(
         color: isSelected
-            ? colorScheme.primary.withValues(
-                alpha: isCompact ? 0.10 : 0.14,
-              )
+            ? colorScheme.primary.withValues(alpha: isCompact ? 0.10 : 0.14)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(borderRadius),
         child: InkWell(
@@ -59,14 +57,8 @@ class AMNavigationTile extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(
-                  destination.icon,
-                  size: iconSize,
-                  color: iconColor,
-                ),
-                SizedBox(
-                  width: isCompact ? AMSpacing.sm : AMSpacing.md,
-                ),
+                Icon(destination.icon, size: iconSize, color: iconColor),
+                SizedBox(width: isCompact ? AMSpacing.sm : AMSpacing.md),
                 Expanded(
                   child: Text(
                     destination.title,

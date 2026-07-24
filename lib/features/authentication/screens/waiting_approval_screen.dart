@@ -18,10 +18,7 @@ class WaitingApprovalScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: const Color(0xFFD4AF37),
-                  width: 1.4,
-                ),
+                border: Border.all(color: const Color(0xFFD4AF37), width: 1.4),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

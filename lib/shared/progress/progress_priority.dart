@@ -1,8 +1,4 @@
-enum ProgressPriority {
-  mandatory,
-  recommended,
-  optional,
-}
+enum ProgressPriority { mandatory, recommended, optional }
 
 extension ProgressPriorityX on ProgressPriority {
   String get label {

@@ -1,6 +1,1 @@
-enum BeastType {
-  panda,
-  dragon,
-  pegasus,
-  phoenix,
-}
+enum BeastType { panda, dragon, pegasus, phoenix }

@@ -68,11 +68,9 @@ class MemberModel {
     return MemberModel(
       amId: amId ?? this.amId,
       playerName: playerName ?? this.playerName,
-      warAndOrderPlayerId:
-          warAndOrderPlayerId ?? this.warAndOrderPlayerId,
+      warAndOrderPlayerId: warAndOrderPlayerId ?? this.warAndOrderPlayerId,
       realmId: realmId ?? this.realmId,
-      currentAllianceId:
-          currentAllianceId ?? this.currentAllianceId,
+      currentAllianceId: currentAllianceId ?? this.currentAllianceId,
       rank: rank ?? this.rank,
       status: status ?? this.status,
       castleLevel: castleLevel ?? this.castleLevel,
@@ -81,8 +79,7 @@ class MemberModel {
       overallProgress: overallProgress ?? this.overallProgress,
       createdAt: createdAt ?? this.createdAt,
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,
-      mustChangePassword:
-          mustChangePassword ?? this.mustChangePassword,
+      mustChangePassword: mustChangePassword ?? this.mustChangePassword,
     );
   }
 }

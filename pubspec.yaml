@@ -86,6 +86,9 @@ flutter:
     - assets/images/colossus/artwork/
     - assets/images/colossus/skills/
     - assets/images/colossus/special_skills/
+    - assets/images/mystic/
+    - assets/images/high_tech/
+    - assets/images/totem/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

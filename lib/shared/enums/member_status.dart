@@ -1,6 +1,1 @@
-enum MemberStatus {
-  active,
-  vacation,
-  inactive,
-  archived,
-}
+enum MemberStatus { active, vacation, inactive, archived }

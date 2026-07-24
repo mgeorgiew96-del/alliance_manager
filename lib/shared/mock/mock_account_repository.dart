@@ -3,14 +3,14 @@ import '../repositories/account_repository.dart';
 
 class MockAccountRepository implements AccountRepository {
   final List<AccountModel> _accounts = [
-   const AccountModel(
-  amId: 'AM-1360-001',
-  passwordHash: '1234',
-  passwordSalt: 'mock',
-  mustChangePassword: false,
-  failedAttempts: 0,
-  accountStatus: 'active',
-),
+    const AccountModel(
+      amId: 'AM-1360-001',
+      passwordHash: '1234',
+      passwordSalt: 'mock',
+      mustChangePassword: false,
+      failedAttempts: 0,
+      accountStatus: 'active',
+    ),
   ];
 
   @override

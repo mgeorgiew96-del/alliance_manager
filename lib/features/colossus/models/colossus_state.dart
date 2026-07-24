@@ -4,15 +4,15 @@ import 'colossus_type.dart';
 
 class ColossusState {
   const ColossusState({
-    required this.colossi,
-    required this.savedColossi,
+    required this.colossus,
+    required this.savedcolossus,
     required this.activeTypes,
     required this.savedActiveTypes,
     this.lastUpdated,
   });
 
   factory ColossusState.initial() {
-    final initialColossi = <ColossusType, ColossusData>{
+    final initialcolossus = <ColossusType, ColossusData>{
       for (final type in ColossusType.values) type: ColossusData.initial(type),
     };
 
@@ -22,15 +22,15 @@ class ColossusState {
     };
 
     return ColossusState(
-      colossi: initialColossi,
-      savedColossi: _copyColossi(initialColossi),
+      colossus: initialcolossus,
+      savedcolossus: _copycolossus(initialcolossus),
       activeTypes: initialActiveTypes,
       savedActiveTypes: initialActiveTypes,
     );
   }
 
-  final Map<ColossusType, ColossusData> colossi;
-  final Map<ColossusType, ColossusData> savedColossi;
+  final Map<ColossusType, ColossusData> colossus;
+  final Map<ColossusType, ColossusData> savedcolossus;
 
   final Set<ColossusType> activeTypes;
   final Set<ColossusType> savedActiveTypes;
@@ -38,7 +38,7 @@ class ColossusState {
   final DateTime? lastUpdated;
 
   ColossusData dataFor(ColossusType type) {
-    return colossi[type] ?? ColossusData.initial(type);
+    return colossus[type] ?? ColossusData.initial(type);
   }
 
   bool isActive(ColossusType type) {
@@ -65,8 +65,8 @@ class ColossusState {
     }
 
     for (final type in ColossusType.values) {
-      final current = colossi[type];
-      final saved = savedColossi[type];
+      final current = colossus[type];
+      final saved = savedcolossus[type];
 
       if (current == null || saved == null) {
         return true;
@@ -82,8 +82,8 @@ class ColossusState {
 
   ColossusState updateColossus(ColossusData updatedData) {
     return copyWith(
-      colossi: <ColossusType, ColossusData>{
-        ...colossi,
+      colossus: <ColossusType, ColossusData>{
+        ...colossus,
         updatedData.type: updatedData,
       },
     );
@@ -138,7 +138,7 @@ class ColossusState {
 
   ColossusState saveSnapshot({DateTime? savedAt}) {
     return copyWith(
-      savedColossi: _copyColossi(colossi),
+      savedcolossus: _copycolossus(colossus),
       savedActiveTypes: Set<ColossusType>.from(activeTypes),
       lastUpdated: savedAt ?? DateTime.now(),
     );
@@ -146,29 +146,29 @@ class ColossusState {
 
   ColossusState cancelChanges() {
     return copyWith(
-      colossi: _copyColossi(savedColossi),
+      colossus: _copycolossus(savedcolossus),
       activeTypes: Set<ColossusType>.from(savedActiveTypes),
     );
   }
 
   ColossusState copyWith({
-    Map<ColossusType, ColossusData>? colossi,
-    Map<ColossusType, ColossusData>? savedColossi,
+    Map<ColossusType, ColossusData>? colossus,
+    Map<ColossusType, ColossusData>? savedcolossus,
     Set<ColossusType>? activeTypes,
     Set<ColossusType>? savedActiveTypes,
     DateTime? lastUpdated,
     bool clearLastUpdated = false,
   }) {
     return ColossusState(
-      colossi: colossi ?? this.colossi,
-      savedColossi: savedColossi ?? this.savedColossi,
+      colossus: colossus ?? this.colossus,
+      savedcolossus: savedcolossus ?? this.savedcolossus,
       activeTypes: activeTypes ?? this.activeTypes,
       savedActiveTypes: savedActiveTypes ?? this.savedActiveTypes,
       lastUpdated: clearLastUpdated ? null : lastUpdated ?? this.lastUpdated,
     );
   }
 
-  static Map<ColossusType, ColossusData> _copyColossi(
+  static Map<ColossusType, ColossusData> _copycolossus(
     Map<ColossusType, ColossusData> source,
   ) {
     return <ColossusType, ColossusData>{

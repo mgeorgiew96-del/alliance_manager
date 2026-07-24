@@ -9,6 +9,7 @@ abstract final class AMAssets {
   static const EquipmentAssetPaths equipment = EquipmentAssetPaths._();
   static const ArtifactAssetPaths artifacts = ArtifactAssetPaths._();
   static const ColossusAssetPaths colossus = ColossusAssetPaths._();
+  static const MysticAssetPaths mystic = MysticAssetPaths._();
   static const CommonAssetPaths common = CommonAssetPaths._();
 }
 
@@ -43,17 +44,11 @@ class BeastAssetPaths {
     return '$_root/skills/$skillId.png';
   }
 
-  String talent({
-    required BeastType beastType,
-    required String talentId,
-  }) {
+  String talent({required BeastType beastType, required String talentId}) {
     return '$_root/talents/${beastType.name}/$talentId.png';
   }
 
-  String skin({
-    required BeastType beastType,
-    required String skinId,
-  }) {
+  String skin({required BeastType beastType, required String skinId}) {
     return '$_root/skins/${beastType.name}/$skinId.png';
   }
 }
@@ -113,5 +108,23 @@ class ColossusAssetPaths {
   }) {
     return '$_root/special_skills/'
         '${colossusType.name}_skill_$skillNumber.png';
+  }
+}
+
+class MysticAssetPaths {
+  const MysticAssetPaths._();
+
+  static const String _root = '${AMAssets.imagesRoot}/mystic';
+
+  String skill({required String troopId, required int skillNumber}) {
+    return '$_root/$troopId$skillNumber.png';
+  }
+
+  String skillByFileName(String fileName) {
+    return '$_root/$fileName';
+  }
+
+  String banner() {
+    return '${AMAssets.imagesRoot}/banners/mystic_banner.png';
   }
 }

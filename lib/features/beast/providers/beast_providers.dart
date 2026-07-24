@@ -17,8 +17,8 @@ class SelectedBeastNotifier extends Notifier<BeastType> {
 
 final selectedBeastProvider =
     NotifierProvider<SelectedBeastNotifier, BeastType>(
-  SelectedBeastNotifier.new,
-);
+      SelectedBeastNotifier.new,
+    );
 
 final currentBeastProvider = Provider<BeastModel>((ref) {
   final selectedBeast = ref.watch(selectedBeastProvider);

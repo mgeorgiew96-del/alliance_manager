@@ -43,10 +43,7 @@ class MockAuthService implements AuthService {
     _currentAccount = account;
     _currentMember = member;
 
-    _sessionService.startSession(
-      account: account,
-      member: member,
-    );
+    _sessionService.startSession(account: account, member: member);
 
     return (account, member);
   }

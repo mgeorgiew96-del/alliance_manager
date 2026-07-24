@@ -70,10 +70,9 @@ class EquipmentScreen extends ConsumerWidget {
     return AMModuleOverview(
       title: 'Equipment',
       bannerPath: AMAssets.common.banner('equipment_banner'),
-      bannerTagline: 'Forge legendary gear. Dominate the battlefield.',
+      bannerTagline: '',
       description:
-          'Track enhancement and jewel progress across every '
-          'equipment slot.',
+          '',
       fallbackIcon: Icons.shield_outlined,
       onBack: () {
         context.go('/member/$amId');

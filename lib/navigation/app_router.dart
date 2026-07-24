@@ -13,16 +13,21 @@ import '../features/beast/screens/beast_screen.dart';
 import '../features/beast/screens/beast_skills_screen.dart';
 import '../features/beast/screens/beast_skins_screen.dart';
 import '../features/beast/screens/beast_talents_screen.dart';
+import '../features/colossus/screens/colossus_screen.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
 import '../features/equipment/models/equipment_slot_type.dart';
 import '../features/equipment/screens/equipment_screen.dart';
 import '../features/equipment/screens/equipment_slot_screen.dart';
+import '../features/high_tech/screens/high_tech_priorities_screen.dart';
+import '../features/high_tech/screens/high_tech_screen.dart';
 import '../features/member_profile/screens/member_profile_screen.dart';
 import '../features/members/screens/members_screen.dart';
+import '../features/mystic/screens/mystic_screen.dart';
 import '../features/welcome/screens/welcome_screen.dart';
 import '../shared/permissions/admin_permissions.dart';
 import '../shared/services/service_locator.dart';
 import '../shared/widgets/am_app_shell.dart';
+import '../features/totem/screens/totem_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -72,10 +77,7 @@ final GoRouter appRouter = GoRouter(
         return null;
       },
       builder: (context, state, child) {
-        return AMAppShell(
-          currentPath: state.uri.path,
-          child: child,
-        );
+        return AMAppShell(currentPath: state.uri.path, child: child);
       },
       routes: [
         GoRoute(
@@ -93,151 +95,122 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/member/:amId',
           builder: (context, state) {
-            final amId =
-                state.pathParameters['amId']!;
+            final amId = state.pathParameters['amId']!;
 
-            return MemberProfileScreen(
-              amId: amId,
-            );
+            return MemberProfileScreen(amId: amId);
           },
         ),
         GoRoute(
           path: '/member/:amId/artifacts',
           builder: (context, state) {
-            final amId =
-                state.pathParameters['amId']!;
+            final amId = state.pathParameters['amId']!;
 
-            return ArtifactsScreen(
-              amId: amId,
-            );
+            return ArtifactsScreen(amId: amId);
           },
         ),
         GoRoute(
-          path:
-              '/member/:amId/artifacts/:itemId',
+          path: '/member/:amId/artifacts/:itemId',
           builder: (context, state) {
-            final amId =
-                state.pathParameters['amId']!;
+            final amId = state.pathParameters['amId']!;
+            final itemId = state.pathParameters['itemId']!;
 
-            final itemId =
-                state.pathParameters['itemId']!;
-
-            return ArtifactItemEditorScreen(
-              amId: amId,
-              itemId: itemId,
-            );
+            return ArtifactItemEditorScreen(amId: amId, itemId: itemId);
           },
         ),
         GoRoute(
           path: '/member/:amId/beast',
           builder: (context, state) {
-            final amId =
-                state.pathParameters['amId']!;
+            final amId = state.pathParameters['amId']!;
 
-            return BeastScreen(
-              amId: amId,
-            );
+            return BeastScreen(amId: amId);
           },
         ),
         GoRoute(
-          path:
-              '/member/:amId/beast/skills',
+          path: '/member/:amId/beast/skills',
           builder: (context, state) {
-            final amId =
-                state.pathParameters['amId']!;
+            final amId = state.pathParameters['amId']!;
 
-            return BeastSkillsScreen(
-              amId: amId,
-            );
+            return BeastSkillsScreen(amId: amId);
           },
         ),
         GoRoute(
-          path:
-              '/member/:amId/beast/talents/:beastType',
+          path: '/member/:amId/beast/talents/:beastType',
           builder: (context, state) {
-            final beastTypeName =
-                state.pathParameters[
-                    'beastType']!;
-
-            final beastType =
-                BeastType.values.firstWhere(
-              (type) =>
-                  type.name ==
-                  beastTypeName,
-              orElse: () =>
-                  BeastType.panda,
+            final beastTypeName = state.pathParameters['beastType']!;
+            final beastType = BeastType.values.firstWhere(
+              (type) => type.name == beastTypeName,
+              orElse: () => BeastType.panda,
             );
 
             return BeastTalentsScreen(
-              amId: state.pathParameters[
-                  'amId']!,
+              amId: state.pathParameters['amId']!,
               beastType: beastType,
             );
           },
         ),
         GoRoute(
-          path:
-              '/member/:amId/beast/skins',
+          path: '/member/:amId/beast/skins',
           builder: (context, state) {
-            final amId =
-                state.pathParameters['amId']!;
+            final amId = state.pathParameters['amId']!;
 
-            return BeastSkinsScreen(
-              amId: amId,
-            );
+            return BeastSkinsScreen(amId: amId);
           },
         ),
         GoRoute(
           path: '/member/:amId/equipment',
           builder: (context, state) {
-            final amId =
-                state.pathParameters['amId']!;
+            final amId = state.pathParameters['amId']!;
 
-            return EquipmentScreen(
-              amId: amId,
-            );
+            return EquipmentScreen(amId: amId);
           },
         ),
         GoRoute(
-          path:
-              '/member/:amId/equipment/:slotType',
+          path: '/member/:amId/equipment/:slotType',
           builder: (context, state) {
-            final amId =
-                state.pathParameters['amId']!;
-
-            final slotTypeName =
-                state.pathParameters[
-                    'slotType']!;
-
-            final slotType =
-                EquipmentSlotType.values
-                    .firstWhere(
-              (type) =>
-                  type.name ==
-                  slotTypeName,
-              orElse: () =>
-                  EquipmentSlotType.weapon,
+            final amId = state.pathParameters['amId']!;
+            final slotTypeName = state.pathParameters['slotType']!;
+            final slotType = EquipmentSlotType.values.firstWhere(
+              (type) => type.name == slotTypeName,
+              orElse: () => EquipmentSlotType.weapon,
             );
 
-            return EquipmentSlotScreen(
-              amId: amId,
-              slotType: slotType,
-            );
+            return EquipmentSlotScreen(amId: amId, slotType: slotType);
+          },
+        ),
+        GoRoute(
+          path: '/member/:amId/colossus',
+          builder: (context, state) {
+            final amId = state.pathParameters['amId']!;
+
+            return ColossusScreen(amId: amId);
+          },
+        ),
+        GoRoute(
+          path: '/member/:amId/mystic',
+          builder: (context, state) {
+            final amId = state.pathParameters['amId']!;
+
+            return MysticScreen(amId: amId);
+          },
+        ),
+        GoRoute(
+          path: '/member/:amId/high-tech',
+          builder: (context, state) {
+            final amId = state.pathParameters['amId']!;
+
+            return HighTechScreen(amId: amId);
           },
         ),
         GoRoute(
           path: '/admin',
           redirect: (context, state) {
-            final member =
-                sessionService.member;
+            final member = sessionService.member;
 
             if (member == null) {
               return '/login';
             }
 
-            if (!isAllianceAdministrator(
-              member.rank,
-            )) {
+            if (!isAllianceAdministrator(member.rank)) {
               return '/access-denied';
             }
 
@@ -250,16 +223,13 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/admin/beast/priorities',
           redirect: (context, state) {
-            final member =
-                sessionService.member;
+            final member = sessionService.member;
 
             if (member == null) {
               return '/login';
             }
 
-            if (!isAllianceAdministrator(
-              member.rank,
-            )) {
+            if (!isAllianceAdministrator(member.rank)) {
               return '/access-denied';
             }
 
@@ -267,6 +237,32 @@ final GoRouter appRouter = GoRouter(
           },
           builder: (context, state) {
             return const BeastPrioritiesScreen();
+          },
+        ),
+        GoRoute(
+          path: '/admin/high-tech/priorities',
+          redirect: (context, state) {
+            final member = sessionService.member;
+
+            if (member == null) {
+              return '/login';
+            }
+
+            if (!isAllianceAdministrator(member.rank)) {
+              return '/access-denied';
+            }
+
+            return null;
+          },
+          builder: (context, state) {
+            return const HighTechPrioritiesScreen();
+          },
+        ),
+        GoRoute(
+          path: '/member/:amId/totem',
+          builder: (context, state) {
+          final amId = state.pathParameters['amId']!;
+          return TotemScreen(amId: amId);
           },
         ),
       ],

@@ -29,7 +29,7 @@ class AMNavigationSubgroup extends StatelessWidget {
   final VoidCallback onExpansionChanged;
   final ValueChanged<AMNavigationDestination> onDestinationSelected;
   final bool Function(AMNavigationDestination destination)
-      isDestinationSelected;
+  isDestinationSelected;
 
   final double indent;
 
@@ -96,16 +96,10 @@ class AMNavigationSubgroup extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  for (
-                    var index = 0;
-                    index < destinations.length;
-                    index++
-                  ) ...[
+                  for (var index = 0; index < destinations.length; index++) ...[
                     AMNavigationTile(
                       destination: destinations[index],
-                      isSelected: isDestinationSelected(
-                        destinations[index],
-                      ),
+                      isSelected: isDestinationSelected(destinations[index]),
                       isCompact: true,
                       onTap: () {
                         onDestinationSelected(destinations[index]);

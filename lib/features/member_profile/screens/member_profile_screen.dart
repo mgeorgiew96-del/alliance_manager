@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/constants/am_assets.dart';
 import '../../../shared/mock/mock_member_data.dart';
 import '../../../shared/theme/am_spacing.dart';
 import '../../../shared/theme/am_text_styles.dart';
@@ -15,10 +16,18 @@ import '../../artifacts/services/artifact_progress_service.dart';
 import '../../beast/controllers/beast_controller.dart';
 import '../../beast/providers/beast_progress_config_provider.dart';
 import '../../beast/services/beast_progress_service.dart';
+import '../../colossus/controllers/colossus_controller.dart';
+import '../../colossus/providers/colossus_progress_config_provider.dart';
+import '../../colossus/services/colossus_progress_service.dart';
 import '../../equipment/controllers/equipment_controller.dart';
 import '../../equipment/providers/equipment_progress_config_provider.dart';
 import '../../equipment/services/equipment_progress_service.dart';
-import '../../../shared/constants/am_assets.dart';
+import '../../mystic/controllers/mystic_controller.dart';
+import '../../mystic/providers/mystic_progress_config_provider.dart';
+import '../../mystic/services/mystic_progress_service.dart';
+import '../../high_tech/controllers/high_tech_controller.dart';
+import '../../high_tech/models/high_tech_progress_config.dart';
+import '../../high_tech/services/high_tech_progress_service.dart';
 
 class MemberProfileScreen extends ConsumerWidget {
   const MemberProfileScreen({super.key, required this.amId});
@@ -30,7 +39,6 @@ class MemberProfileScreen extends ConsumerWidget {
     final member = mockMembers.firstWhere((member) => member.amId == amId);
 
     final beastState = ref.watch(beastControllerProvider);
-
     final beastConfig = ref.watch(beastProgressConfigProvider);
 
     final beastProgress = beastState.when(
@@ -45,7 +53,6 @@ class MemberProfileScreen extends ConsumerWidget {
     );
 
     final equipmentState = ref.watch(equipmentControllerProvider);
-
     final equipmentConfig = ref.watch(equipmentProgressConfigProvider);
 
     final equipmentProgress = EquipmentProgressService.calculateOverallProgress(
@@ -62,6 +69,57 @@ class MemberProfileScreen extends ConsumerWidget {
       loading: () => 0.0,
       error: (error, stackTrace) => 0.0,
     );
+
+    final colossusState = ref.watch(colossusControllerProvider);
+    final colossusConfig = ref.watch(colossusProgressConfigProvider);
+
+    final colossusProgress = colossusState.when(
+      data: (state) {
+        return ColossusProgressService.calculate(
+          state: state,
+          config: colossusConfig,
+        );
+      },
+      loading: () => 0.0,
+      error: (error, stackTrace) => 0.0,
+    );
+
+    final mysticState = ref.watch(mysticControllerProvider);
+    final mysticConfig = ref.watch(mysticProgressConfigProvider);
+
+    final mysticProgress = mysticState.when(
+      data: (state) {
+        return MysticProgressService.calculateOverallProgress(
+          state: state,
+          config: mysticConfig,
+        );
+      },
+      loading: () => 0.0,
+      error: (error, stackTrace) => 0.0,
+    );
+
+    final highTechState = ref.watch(highTechControllerProvider);
+    final highTechConfig = HighTechProgressConfig.initial();
+
+    final highTechProgress = highTechState.when(
+      data: (state) {
+        return HighTechProgressService.calculateOverallProgress(
+          state: state,
+          config: highTechConfig,
+        );
+      },
+      loading: () => 0.0,
+      error: (error, stackTrace) => 0.0,
+    );
+
+    final liveOverallProgress = _averageProgress([
+      beastProgress,
+      equipmentProgress,
+      artifactsProgress,
+      colossusProgress,
+      mysticProgress,
+      highTechProgress,
+    ]);
 
     final castleModules = <Widget>[
       AMCastleModuleCard(
@@ -101,42 +159,46 @@ class MemberProfileScreen extends ConsumerWidget {
       AMCastleModuleCard(
         title: 'Colossus',
         description:
-            'Track troop-dependent Colossus stats and special '
-            'skills.',
-        icon: Icons.account_tree,
+            'Upgrade all four Colossi, choose two active '
+            'Colossi, and unlock their special skills.',
+        icon: Icons.account_balance,
         imagePath: AMAssets.common.moduleIcon('colossus'),
-        progress: 0,
-        isAvailable: false,
-        onOpen: () {},
+        progress: colossusProgress,
+        onOpen: () {
+          context.go('/member/$amId/colossus');
+        },
       ),
       AMCastleModuleCard(
         title: 'Mystic',
         description:
-            'Track frontline, backline, and Angels Mystic '
-            'progress.',
+            'Track Infantry, Cavalry, Archer, Mage, and '
+            'Angels Mystic skills.',
         icon: Icons.auto_awesome,
         imagePath: AMAssets.common.moduleIcon('mystic'),
-        progress: 0,
-        isAvailable: false,
-        onOpen: () {},
+        progress: mysticProgress,
+        onOpen: () {
+          context.go('/member/$amId/mystic');
+        },
       ),
       AMCastleModuleCard(
         title: 'High Tech',
         description: 'Track the complete High Tech tree and priority nodes.',
         icon: Icons.memory,
         imagePath: AMAssets.common.moduleIcon('high_tech'),
-        progress: 0,
-        isAvailable: false,
-        onOpen: () {},
+        progress: highTechProgress,
+        onOpen: () {
+          context.go('/member/$amId/high-tech');
+        },
       ),
       AMCastleModuleCard(
-        title: 'Totem',
+       title: 'Totem',
         description: 'Track selected Totem level and skill progress.',
         icon: Icons.park,
         imagePath: AMAssets.common.moduleIcon('totem'),
         progress: 0,
-        isAvailable: false,
-        onOpen: () {},
+        onOpen: () {
+        context.go('/member/$amId/totem');
+        },
       ),
       AMCastleModuleCard(
         title: 'Titan',
@@ -162,9 +224,9 @@ class MemberProfileScreen extends ConsumerWidget {
         title: 'Statistics',
         description: 'Review general, event, and troop-specific stats.',
         icon: Icons.bar_chart,
+        imagePath: AMAssets.common.moduleIcon('statistics'),
         progress: 0,
         isAvailable: false,
-        imagePath: AMAssets.common.moduleIcon('statistics'),
         onOpen: () {},
       ),
     ];
@@ -201,7 +263,7 @@ class MemberProfileScreen extends ConsumerWidget {
                 ),
                 _ProfileRow(
                   label: 'Overall Progress',
-                  value: '${member.overallProgress.toStringAsFixed(1)}%',
+                  value: '${(liveOverallProgress * 100).toStringAsFixed(1)}%',
                 ),
               ],
             ),
@@ -222,7 +284,7 @@ class MemberProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: AMSpacing.lg),
           AMPrimaryButton(
-            text: 'BACK TO MEMBERS',
+            text: 'BACK TO ALLIANCE HALL',
             icon: Icons.arrow_back,
             onPressed: () {
               context.go('/members');
@@ -266,6 +328,15 @@ String _capitalise(String value) {
     return value;
   }
 
-  return '${value[0].toUpperCase()}'
-      '${value.substring(1)}';
+  return '${value[0].toUpperCase()}${value.substring(1)}';
+}
+
+double _averageProgress(List<double> values) {
+  if (values.isEmpty) {
+    return 0;
+  }
+
+  final total = values.fold<double>(0, (sum, value) => sum + value);
+
+  return (total / values.length).clamp(0, 1).toDouble();
 }

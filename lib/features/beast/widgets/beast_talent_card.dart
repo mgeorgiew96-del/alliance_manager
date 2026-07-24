@@ -37,14 +37,9 @@ class BeastTalentCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AMSpacing.sm),
-            Text(
-              'Lv $level / ${talent.maxLevel}',
-              style: AMTextStyles.body,
-            ),
+            Text('Lv $level / ${talent.maxLevel}', style: AMTextStyles.body),
             const SizedBox(height: AMSpacing.sm),
-            AMProgressBar(
-              progress: progress,
-            ),
+            AMProgressBar(progress: progress),
             const SizedBox(height: AMSpacing.sm),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

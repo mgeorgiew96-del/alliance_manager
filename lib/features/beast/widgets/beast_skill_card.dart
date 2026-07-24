@@ -32,12 +32,7 @@ class BeastSkillCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Expanded(
-                  child: Text(
-                    skill.name,
-                    style: AMTextStyles.subtitle,
-                  ),
-                ),
+                Expanded(child: Text(skill.name, style: AMTextStyles.subtitle)),
                 GameInfoButton(
                   title: skill.name,
                   description:
@@ -48,10 +43,7 @@ class BeastSkillCard extends StatelessWidget {
 
             const SizedBox(height: AMSpacing.md),
 
-            GameProgressBar(
-              label: 'Progress',
-              progress: progress,
-            ),
+            GameProgressBar(label: 'Progress', progress: progress),
 
             const SizedBox(height: AMSpacing.md),
 

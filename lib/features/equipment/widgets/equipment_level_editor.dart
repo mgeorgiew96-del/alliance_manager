@@ -51,17 +51,11 @@ class EquipmentLevelEditor extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        title,
-                        style: AMTextStyles.subtitle,
-                      ),
+                      Text(title, style: AMTextStyles.subtitle),
                       if (description != null &&
                           description!.trim().isNotEmpty) ...[
                         const SizedBox(height: AMSpacing.xs),
-                        Text(
-                          description!,
-                          style: AMTextStyles.muted,
-                        ),
+                        Text(description!, style: AMTextStyles.muted),
                       ],
                     ],
                   ),
@@ -73,9 +67,7 @@ class EquipmentLevelEditor extends StatelessWidget {
                     vertical: AMSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).dividerColor,
-                    ),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -86,10 +78,7 @@ class EquipmentLevelEditor extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AMSpacing.lg),
-            Text(
-              'LEVEL',
-              style: AMTextStyles.body,
-            ),
+            Text('LEVEL', style: AMTextStyles.body),
             const SizedBox(height: AMSpacing.xs),
             Text(
               'Valid range: $minimumLevel–$maximumLevel',
@@ -105,9 +94,7 @@ class EquipmentLevelEditor extends StatelessWidget {
                           onLevelChanged(level - 1);
                         }
                       : null,
-                  icon: const Icon(
-                    Icons.remove,
-                  ),
+                  icon: const Icon(Icons.remove),
                 ),
                 Expanded(
                   child: Container(
@@ -117,15 +104,10 @@ class EquipmentLevelEditor extends StatelessWidget {
                       vertical: AMSpacing.md,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(context).dividerColor,
-                      ),
+                      border: Border.all(color: Theme.of(context).dividerColor),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
-                      '$level',
-                      style: AMTextStyles.title,
-                    ),
+                    child: Text('$level', style: AMTextStyles.title),
                   ),
                 ),
                 IconButton(
@@ -135,9 +117,7 @@ class EquipmentLevelEditor extends StatelessWidget {
                           onLevelChanged(level + 1);
                         }
                       : null,
-                  icon: const Icon(
-                    Icons.add,
-                  ),
+                  icon: const Icon(Icons.add),
                 ),
               ],
             ),

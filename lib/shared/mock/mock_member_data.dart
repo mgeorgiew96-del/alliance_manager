@@ -52,5 +52,4 @@ final mockMembers = <MemberModel>[
     backlineTroop: TroopType.mage,
     overallProgress: 0,
   ),
-  
 ];

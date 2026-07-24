@@ -121,36 +121,12 @@ const beastSkills = [
 ];
 
 const beastSkins = [
-  BeastSkinModel(
-    type: BeastSkinType.regular,
-    level: 0,
-    maxLevel: 20,
-  ),
-  BeastSkinModel(
-    type: BeastSkinType.ice,
-    level: 0,
-    maxLevel: 20,
-  ),
-  BeastSkinModel(
-    type: BeastSkinType.dark,
-    level: 0,
-    maxLevel: 16,
-  ),
-  BeastSkinModel(
-    type: BeastSkinType.desert,
-    level: 0,
-    maxLevel: 16,
-  ),
-  BeastSkinModel(
-    type: BeastSkinType.mecha,
-    level: 0,
-    maxLevel: 16,
-  ),
-  BeastSkinModel(
-    type: BeastSkinType.dracula,
-    level: 0,
-    maxLevel: 16,
-  ),
+  BeastSkinModel(type: BeastSkinType.regular, level: 0, maxLevel: 20),
+  BeastSkinModel(type: BeastSkinType.ice, level: 0, maxLevel: 20),
+  BeastSkinModel(type: BeastSkinType.dark, level: 0, maxLevel: 16),
+  BeastSkinModel(type: BeastSkinType.desert, level: 0, maxLevel: 16),
+  BeastSkinModel(type: BeastSkinType.mecha, level: 0, maxLevel: 16),
+  BeastSkinModel(type: BeastSkinType.dracula, level: 0, maxLevel: 16),
 ];
 
 const emptyBeastProgress = BeastProgressModel(

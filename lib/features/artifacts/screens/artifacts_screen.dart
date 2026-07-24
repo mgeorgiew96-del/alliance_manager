@@ -90,10 +90,9 @@ class _ArtifactsScreenState extends ConsumerState<ArtifactsScreen> {
     return AMModuleOverview(
       title: 'Artifacts',
       bannerPath: AMAssets.common.banner('artifacts_banner'),
-      bannerTagline: 'Collect ancient relics. Gain unmatched strength.',
+      bannerTagline: '',
       description:
-          'Record every Artifact and Crown. Only the selected '
-          '5 Artifacts and 4 Crowns contribute to progress.',
+          '',
       fallbackIcon: Icons.workspace_premium,
       onBack: () {
         context.go('/member/${widget.amId}');

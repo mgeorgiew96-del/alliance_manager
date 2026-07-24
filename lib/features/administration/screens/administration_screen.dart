@@ -92,15 +92,16 @@ class AdministrationScreen extends StatelessWidget {
             isComingSoon: true,
           ),
           const SizedBox(height: AMSpacing.md),
-          const AdminModuleCard(
+          AdminModuleCard(
             title: 'High Tech',
             description:
                 'Configure tracked High Tech nodes and priority '
                 'targets.',
             icon: Icons.hub,
-            buttonText: 'COMING SOON',
-            onPressed: null,
-            isComingSoon: true,
+            buttonText: 'OPEN HIGH TECH PRIORITIES',
+            onPressed: () {
+              context.go('/admin/high-tech/priorities');
+            },
           ),
           const SizedBox(height: AMSpacing.md),
           const AdminModuleCard(

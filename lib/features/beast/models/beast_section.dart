@@ -1,5 +1,1 @@
-enum BeastSection {
-  skills,
-  talents,
-  skins,
-}
+enum BeastSection { skills, talents, skins }

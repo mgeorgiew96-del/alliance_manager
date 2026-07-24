@@ -37,8 +37,7 @@ class _MembersScreenState extends State<MembersScreen> {
           member.playerName.toLowerCase().contains(query) ||
           member.amId.toLowerCase().contains(query);
 
-      final matchesRank =
-          _selectedRank == null || member.rank == _selectedRank;
+      final matchesRank = _selectedRank == null || member.rank == _selectedRank;
 
       return matchesSearch && matchesRank;
     }).toList();
@@ -47,10 +46,7 @@ class _MembersScreenState extends State<MembersScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Alliance Members',
-            style: AMTextStyles.title,
-          ),
+          const Text('Alliance Members', style: AMTextStyles.title),
           const SizedBox(height: AMSpacing.sm),
           Text(
             '${filteredMembers.length} / 100 members',
@@ -85,8 +81,12 @@ class _MembersScreenState extends State<MembersScreen> {
           const SizedBox(height: AMSpacing.lg),
 
           for (final member in filteredMembers)
-            MemberCard(  member: member,  onTap: () {context.go('/member/${member.amId}');},
-),
+            MemberCard(
+              member: member,
+              onTap: () {
+                context.go('/member/${member.amId}');
+              },
+            ),
         ],
       ),
     );

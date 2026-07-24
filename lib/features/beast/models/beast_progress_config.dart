@@ -49,7 +49,7 @@ class BeastProgressConfig {
   final Map<String, BeastTrackedItemConfig> skillConfigs;
 
   final Map<BeastType, Map<String, BeastTrackedItemConfig>>
-      talentConfigsByBeast;
+  talentConfigsByBeast;
 
   final Map<String, BeastTrackedItemConfig> skinConfigs;
 
@@ -61,9 +61,7 @@ class BeastProgressConfig {
     return (totalWeight - 1).abs() <= 0.0001;
   }
 
-  Map<String, BeastTrackedItemConfig> talentConfigsFor(
-    BeastType beastType,
-  ) {
+  Map<String, BeastTrackedItemConfig> talentConfigsFor(BeastType beastType) {
     return talentConfigsByBeast[beastType] ?? const {};
   }
 
@@ -72,8 +70,7 @@ class BeastProgressConfig {
     double? talentsWeight,
     double? skinsWeight,
     Map<String, BeastTrackedItemConfig>? skillConfigs,
-    Map<BeastType, Map<String, BeastTrackedItemConfig>>?
-        talentConfigsByBeast,
+    Map<BeastType, Map<String, BeastTrackedItemConfig>>? talentConfigsByBeast,
     Map<String, BeastTrackedItemConfig>? skinConfigs,
   }) {
     return BeastProgressConfig(
@@ -81,8 +78,7 @@ class BeastProgressConfig {
       talentsWeight: talentsWeight ?? this.talentsWeight,
       skinsWeight: skinsWeight ?? this.skinsWeight,
       skillConfigs: skillConfigs ?? this.skillConfigs,
-      talentConfigsByBeast:
-          talentConfigsByBeast ?? this.talentConfigsByBeast,
+      talentConfigsByBeast: talentConfigsByBeast ?? this.talentConfigsByBeast,
       skinConfigs: skinConfigs ?? this.skinConfigs,
     );
   }
@@ -100,18 +96,17 @@ class BeastProgressConfig {
 
     final talentConfigsByBeast =
         <BeastType, Map<String, BeastTrackedItemConfig>>{
-      for (final beastType in BeastType.values)
-        beastType: {
-          for (final talent
-              in talentDefinitionsForBeast(beastType))
-            talent.id: BeastTrackedItemConfig(
-              id: talent.id,
-              isTracked: true,
-              targetLevel: talent.maxLevel,
-              priority: ProgressPriority.recommended,
-            ),
-        },
-    };
+          for (final beastType in BeastType.values)
+            beastType: {
+              for (final talent in talentDefinitionsForBeast(beastType))
+                talent.id: BeastTrackedItemConfig(
+                  id: talent.id,
+                  isTracked: true,
+                  targetLevel: talent.maxLevel,
+                  priority: ProgressPriority.recommended,
+                ),
+            },
+        };
 
     final skinConfigs = <String, BeastTrackedItemConfig>{
       for (final skin in beastSkinDefinitions)

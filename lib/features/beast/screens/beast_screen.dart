@@ -151,11 +151,10 @@ class _BeastOverview extends ConsumerWidget {
     return AMModuleOverview(
       title: 'Beast',
       bannerPath: AMAssets.common.banner('beast_banner'),
-      bannerTagline: 'Four beasts, one bond. Unleash their true power.',
+      bannerTagline: '',
       bannerAlignment: Alignment.topCenter,
       description:
-          'Manage Beast level, skills, talents, skins, and '
-          'tracked progress.',
+          '',
       fallbackIcon: Icons.pets,
       onBack: () {
         context.go('/member/$amId');

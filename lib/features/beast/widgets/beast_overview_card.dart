@@ -6,10 +6,7 @@ import '../../../shared/widgets/game/game_section_header.dart';
 import '../models/beast_model.dart';
 
 class BeastOverviewCard extends StatelessWidget {
-  const BeastOverviewCard({
-    super.key,
-    required this.beast,
-  });
+  const BeastOverviewCard({super.key, required this.beast});
 
   final BeastModel beast;
 

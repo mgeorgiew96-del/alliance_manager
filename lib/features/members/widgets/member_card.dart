@@ -6,11 +6,7 @@ import '../../../shared/theme/am_text_styles.dart';
 import '../../../shared/widgets/am_card.dart';
 
 class MemberCard extends StatelessWidget {
-  const MemberCard({
-    super.key,
-    required this.member,
-    this.onTap,
-  });
+  const MemberCard({super.key, required this.member, this.onTap});
 
   final MemberModel member;
   final VoidCallback? onTap;
@@ -26,16 +22,10 @@ class MemberCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                member.playerName,
-                style: AMTextStyles.title,
-              ),
+              Text(member.playerName, style: AMTextStyles.title),
               const SizedBox(height: AMSpacing.sm),
 
-              Text(
-                member.amId,
-                style: AMTextStyles.body,
-              ),
+              Text(member.amId, style: AMTextStyles.body),
               const SizedBox(height: AMSpacing.sm),
 
               Text(

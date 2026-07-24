@@ -28,14 +28,8 @@ class AMTheme {
         fontSize: 22,
         fontWeight: FontWeight.bold,
       ),
-      bodyMedium: TextStyle(
-        color: AMColors.textPrimary,
-        fontSize: 14,
-      ),
-      bodySmall: TextStyle(
-        color: AMColors.textSecondary,
-        fontSize: 12,
-      ),
+      bodyMedium: TextStyle(color: AMColors.textPrimary, fontSize: 14),
+      bodySmall: TextStyle(color: AMColors.textSecondary, fontSize: 12),
     ),
   );
 }

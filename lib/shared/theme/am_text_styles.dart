@@ -15,15 +15,9 @@ class AMTextStyles {
     fontSize: 14,
   );
 
-  static const body = TextStyle(
-    color: AMColors.textPrimary,
-    fontSize: 14,
-  );
+  static const body = TextStyle(color: AMColors.textPrimary, fontSize: 14);
 
-  static const muted = TextStyle(
-    color: AMColors.textMuted,
-    fontSize: 12,
-  );
+  static const muted = TextStyle(color: AMColors.textMuted, fontSize: 12);
 
   static const button = TextStyle(
     fontWeight: FontWeight.bold,

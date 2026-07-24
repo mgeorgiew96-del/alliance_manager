@@ -11,11 +11,7 @@ import '../theme/am_spacing.dart';
 import '../theme/am_text_styles.dart';
 
 class AMAppShell extends StatelessWidget {
-  const AMAppShell({
-    super.key,
-    required this.currentPath,
-    required this.child,
-  });
+  const AMAppShell({super.key, required this.currentPath, required this.child});
 
   final String currentPath;
   final Widget child;
@@ -37,8 +33,7 @@ class AMAppShell extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final useDesktopNavigation =
-            constraints.maxWidth >= _desktopBreakpoint;
+        final useDesktopNavigation = constraints.maxWidth >= _desktopBreakpoint;
 
         if (useDesktopNavigation) {
           return Scaffold(
@@ -96,10 +91,7 @@ class AMAppShell extends StatelessWidget {
                     Navigator.of(context).pop();
                   }
 
-                  _openDestination(
-                    context: context,
-                    destination: destination,
-                  );
+                  _openDestination(context: context, destination: destination);
                 },
                 onSignOut: () {
                   Navigator.of(context).pop();
@@ -120,9 +112,7 @@ class AMAppShell extends StatelessWidget {
   }) {
     if (!destination.isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${destination.title} is coming soon.'),
-        ),
+        SnackBar(content: Text('${destination.title} is coming soon.')),
       );
 
       return;
@@ -204,8 +194,7 @@ class AMAppShell extends StatelessWidget {
       return 'Battlefield Glory';
     }
 
-    if (path.startsWith('/admin') ||
-        path.startsWith('/royal-office')) {
+    if (path.startsWith('/admin') || path.startsWith('/royal-office')) {
       return 'Royal Office';
     }
 
@@ -228,14 +217,12 @@ class _NavigationPanel extends StatefulWidget {
   final String? playerName;
   final String? amId;
 
-  final ValueChanged<AMNavigationDestination>
-      onDestinationSelected;
+  final ValueChanged<AMNavigationDestination> onDestinationSelected;
 
   final VoidCallback onSignOut;
 
   @override
-  State<_NavigationPanel> createState() =>
-      _NavigationPanelState();
+  State<_NavigationPanel> createState() => _NavigationPanelState();
 }
 
 class _NavigationPanelState extends State<_NavigationPanel> {
@@ -253,9 +240,7 @@ class _NavigationPanelState extends State<_NavigationPanel> {
   }
 
   @override
-  void didUpdateWidget(
-    covariant _NavigationPanel oldWidget,
-  ) {
+  void didUpdateWidget(covariant _NavigationPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.currentPath != widget.currentPath) {
@@ -283,25 +268,17 @@ class _NavigationPanelState extends State<_NavigationPanel> {
               children: [
                 AMNavigationTile(
                   destination: data.commandRoom,
-                  isSelected: _isDestinationSelected(
-                    data.commandRoom,
-                  ),
+                  isSelected: _isDestinationSelected(data.commandRoom),
                   onTap: () {
-                    widget.onDestinationSelected(
-                      data.commandRoom,
-                    );
+                    widget.onDestinationSelected(data.commandRoom);
                   },
                 ),
                 const SizedBox(height: AMSpacing.xs),
                 AMNavigationTile(
                   destination: data.allianceHall,
-                  isSelected: _isDestinationSelected(
-                    data.allianceHall,
-                  ),
+                  isSelected: _isDestinationSelected(data.allianceHall),
                   onTap: () {
-                    widget.onDestinationSelected(
-                      data.allianceHall,
-                    );
+                    widget.onDestinationSelected(data.allianceHall);
                   },
                 ),
                 const SizedBox(height: AMSpacing.xs),
@@ -334,15 +311,9 @@ class _NavigationPanelState extends State<_NavigationPanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'ALLIANCE MANAGER',
-            style: AMTextStyles.title,
-          ),
+          Text('ALLIANCE MANAGER', style: AMTextStyles.title),
           const SizedBox(height: AMSpacing.xs),
-          Text(
-            'APX • Realm 1360',
-            style: AMTextStyles.muted,
-          ),
+          Text('APX • Realm 1360', style: AMTextStyles.muted),
         ],
       ),
     );
@@ -352,15 +323,13 @@ class _NavigationPanelState extends State<_NavigationPanel> {
     return AMNavigationGroup(
       title: 'My Castle',
       icon: Icons.castle_outlined,
-      destinations:
-          widget.navigationData.castleDestinations,
+      destinations: widget.navigationData.castleDestinations,
       isExpanded: _isSectionExpanded('my-castle'),
       isSelected: _isCastlePath(widget.currentPath),
       onExpansionChanged: () {
         _toggleSection('my-castle');
       },
-      onDestinationSelected:
-          widget.onDestinationSelected,
+      onDestinationSelected: widget.onDestinationSelected,
       isDestinationSelected: _isDestinationSelected,
     );
   }
@@ -369,16 +338,13 @@ class _NavigationPanelState extends State<_NavigationPanel> {
     return AMNavigationGroup(
       title: 'War Room',
       icon: Icons.sports_martial_arts,
-      destinations:
-          widget.navigationData.warRoomDestinations,
+      destinations: widget.navigationData.warRoomDestinations,
       isExpanded: _isSectionExpanded('war-room'),
-      isSelected:
-          widget.currentPath.startsWith('/war-room'),
+      isSelected: widget.currentPath.startsWith('/war-room'),
       onExpansionChanged: () {
         _toggleSection('war-room');
       },
-      onDestinationSelected:
-          widget.onDestinationSelected,
+      onDestinationSelected: widget.onDestinationSelected,
       isDestinationSelected: _isDestinationSelected,
     );
   }
@@ -389,10 +355,8 @@ class _NavigationPanelState extends State<_NavigationPanel> {
     return _NestedNavigationSection(
       title: 'Hall of Heroes',
       icon: Icons.emoji_events_outlined,
-      isExpanded:
-          _isSectionExpanded('hall-of-heroes'),
-      isSelected: widget.currentPath
-          .startsWith('/hall-of-heroes'),
+      isExpanded: _isSectionExpanded('hall-of-heroes'),
+      isSelected: widget.currentPath.startsWith('/hall-of-heroes'),
       onExpansionChanged: () {
         _toggleSection('hall-of-heroes');
       },
@@ -401,38 +365,26 @@ class _NavigationPanelState extends State<_NavigationPanel> {
           title: 'Rankings',
           icon: Icons.leaderboard_outlined,
           destinations: data.rankingDestinations,
-          isExpanded: _isSubgroupExpanded(
-            'hall-rankings',
-          ),
-          isSelected: _isAnyDestinationSelected(
-            data.rankingDestinations,
-          ),
+          isExpanded: _isSubgroupExpanded('hall-rankings'),
+          isSelected: _isAnyDestinationSelected(data.rankingDestinations),
           onExpansionChanged: () {
             _toggleSubgroup('hall-rankings');
           },
-          onDestinationSelected:
-              widget.onDestinationSelected,
-          isDestinationSelected:
-              _isDestinationSelected,
+          onDestinationSelected: widget.onDestinationSelected,
+          isDestinationSelected: _isDestinationSelected,
         ),
         const SizedBox(height: AMSpacing.xs),
         AMNavigationSubgroup(
           title: 'Reports',
           icon: Icons.assessment_outlined,
           destinations: data.reportDestinations,
-          isExpanded: _isSubgroupExpanded(
-            'hall-reports',
-          ),
-          isSelected: _isAnyDestinationSelected(
-            data.reportDestinations,
-          ),
+          isExpanded: _isSubgroupExpanded('hall-reports'),
+          isSelected: _isAnyDestinationSelected(data.reportDestinations),
           onExpansionChanged: () {
             _toggleSubgroup('hall-reports');
           },
-          onDestinationSelected:
-              widget.onDestinationSelected,
-          isDestinationSelected:
-              _isDestinationSelected,
+          onDestinationSelected: widget.onDestinationSelected,
+          isDestinationSelected: _isDestinationSelected,
         ),
       ],
     );
@@ -442,17 +394,13 @@ class _NavigationPanelState extends State<_NavigationPanel> {
     return AMNavigationGroup(
       title: 'Battle Academy',
       icon: Icons.menu_book_outlined,
-      destinations:
-          widget.navigationData.academyDestinations,
-      isExpanded:
-          _isSectionExpanded('battle-academy'),
-      isSelected: widget.currentPath
-          .startsWith('/battle-academy'),
+      destinations: widget.navigationData.academyDestinations,
+      isExpanded: _isSectionExpanded('battle-academy'),
+      isSelected: widget.currentPath.startsWith('/battle-academy'),
       onExpansionChanged: () {
         _toggleSection('battle-academy');
       },
-      onDestinationSelected:
-          widget.onDestinationSelected,
+      onDestinationSelected: widget.onDestinationSelected,
       isDestinationSelected: _isDestinationSelected,
     );
   }
@@ -461,17 +409,13 @@ class _NavigationPanelState extends State<_NavigationPanel> {
     return AMNavigationGroup(
       title: 'War Chronicle',
       icon: Icons.notifications_outlined,
-      destinations:
-          widget.navigationData.notificationDestinations,
-      isExpanded:
-          _isSectionExpanded('war-chronicle'),
-      isSelected: widget.currentPath
-          .startsWith('/war-chronicle'),
+      destinations: widget.navigationData.notificationDestinations,
+      isExpanded: _isSectionExpanded('war-chronicle'),
+      isSelected: widget.currentPath.startsWith('/war-chronicle'),
       onExpansionChanged: () {
         _toggleSection('war-chronicle');
       },
-      onDestinationSelected:
-          widget.onDestinationSelected,
+      onDestinationSelected: widget.onDestinationSelected,
       isDestinationSelected: _isDestinationSelected,
     );
   }
@@ -480,17 +424,13 @@ class _NavigationPanelState extends State<_NavigationPanel> {
     return AMNavigationGroup(
       title: 'Battlefield Glory',
       icon: Icons.military_tech_outlined,
-      destinations: widget
-          .navigationData.battlefieldGloryDestinations,
-      isExpanded:
-          _isSectionExpanded('battlefield-glory'),
-      isSelected: widget.currentPath
-          .startsWith('/battlefield-glory'),
+      destinations: widget.navigationData.battlefieldGloryDestinations,
+      isExpanded: _isSectionExpanded('battlefield-glory'),
+      isSelected: widget.currentPath.startsWith('/battlefield-glory'),
       onExpansionChanged: () {
         _toggleSection('battlefield-glory');
       },
-      onDestinationSelected:
-          widget.onDestinationSelected,
+      onDestinationSelected: widget.onDestinationSelected,
       isDestinationSelected: _isDestinationSelected,
     );
   }
@@ -501,10 +441,9 @@ class _NavigationPanelState extends State<_NavigationPanel> {
     return _NestedNavigationSection(
       title: 'Royal Office',
       icon: Icons.settings_outlined,
-      isExpanded:
-          _isSectionExpanded('royal-office'),
-      isSelected: widget.currentPath
-              .startsWith('/royal-office') ||
+      isExpanded: _isSectionExpanded('royal-office'),
+      isSelected:
+          widget.currentPath.startsWith('/royal-office') ||
           widget.currentPath.startsWith('/admin'),
       onExpansionChanged: () {
         _toggleSection('royal-office');
@@ -516,66 +455,46 @@ class _NavigationPanelState extends State<_NavigationPanel> {
           index++
         ) ...[
           AMNavigationTile(
-            destination:
-                data.royalOfficeDestinations[index],
+            destination: data.royalOfficeDestinations[index],
             isSelected: _isDestinationSelected(
               data.royalOfficeDestinations[index],
             ),
             isCompact: true,
             onTap: () {
-              widget.onDestinationSelected(
-                data.royalOfficeDestinations[index],
-              );
+              widget.onDestinationSelected(data.royalOfficeDestinations[index]);
             },
           ),
-          if (index <
-              data.royalOfficeDestinations.length - 1)
+          if (index < data.royalOfficeDestinations.length - 1)
             const SizedBox(height: AMSpacing.xs),
         ],
         const SizedBox(height: AMSpacing.xs),
         AMNavigationSubgroup(
           title: 'Administration',
           icon: Icons.admin_panel_settings_outlined,
-          destinations:
-              data.administrationDestinations,
-          isExpanded: _isSubgroupExpanded(
-            'royal-administration',
-          ),
+          destinations: data.administrationDestinations,
+          isExpanded: _isSubgroupExpanded('royal-administration'),
           isSelected: _isAnyDestinationSelected(
             data.administrationDestinations,
           ),
           onExpansionChanged: () {
-            _toggleSubgroup(
-              'royal-administration',
-            );
+            _toggleSubgroup('royal-administration');
           },
-          onDestinationSelected:
-              widget.onDestinationSelected,
-          isDestinationSelected:
-              _isDestinationSelected,
+          onDestinationSelected: widget.onDestinationSelected,
+          isDestinationSelected: _isDestinationSelected,
         ),
         if (data.controlRoomDestinations.isNotEmpty) ...[
           const SizedBox(height: AMSpacing.xs),
           AMNavigationSubgroup(
             title: 'Control Room',
             icon: Icons.security_outlined,
-            destinations:
-                data.controlRoomDestinations,
-            isExpanded: _isSubgroupExpanded(
-              'royal-control-room',
-            ),
-            isSelected: _isAnyDestinationSelected(
-              data.controlRoomDestinations,
-            ),
+            destinations: data.controlRoomDestinations,
+            isExpanded: _isSubgroupExpanded('royal-control-room'),
+            isSelected: _isAnyDestinationSelected(data.controlRoomDestinations),
             onExpansionChanged: () {
-              _toggleSubgroup(
-                'royal-control-room',
-              );
+              _toggleSubgroup('royal-control-room');
             },
-            onDestinationSelected:
-                widget.onDestinationSelected,
-            isDestinationSelected:
-                _isDestinationSelected,
+            onDestinationSelected: widget.onDestinationSelected,
+            isDestinationSelected: _isDestinationSelected,
           ),
         ],
       ],
@@ -597,10 +516,7 @@ class _NavigationPanelState extends State<_NavigationPanel> {
             ),
             if (widget.amId != null) ...[
               const SizedBox(height: AMSpacing.xs),
-              Text(
-                widget.amId!,
-                style: AMTextStyles.muted,
-              ),
+              Text(widget.amId!, style: AMTextStyles.muted),
             ],
             const SizedBox(height: AMSpacing.md),
           ],
@@ -614,15 +530,12 @@ class _NavigationPanelState extends State<_NavigationPanel> {
     );
   }
 
-  bool _isDestinationSelected(
-    AMNavigationDestination destination,
-  ) {
+  bool _isDestinationSelected(AMNavigationDestination destination) {
     final path = widget.currentPath;
 
     switch (destination.title) {
       case 'Command Room':
-        return path == '/command-room' ||
-            path == '/dashboard';
+        return path == '/command-room' || path == '/dashboard';
 
       case 'Alliance Hall':
         return path == '/members';
@@ -631,8 +544,7 @@ class _NavigationPanelState extends State<_NavigationPanel> {
         return _isCastleOverviewPath(path);
 
       case 'Beast':
-        return path.contains('/beast') &&
-            !path.startsWith('/admin');
+        return path.contains('/beast') && !path.startsWith('/admin');
 
       case 'Equipment':
         return path.contains('/equipment');
@@ -668,14 +580,11 @@ class _NavigationPanelState extends State<_NavigationPanel> {
         return path == '/admin/beast/priorities';
 
       default:
-        return destination.isAvailable &&
-            path == destination.route;
+        return destination.isAvailable && path == destination.route;
     }
   }
 
-  bool _isAnyDestinationSelected(
-    List<AMNavigationDestination> destinations,
-  ) {
+  bool _isAnyDestinationSelected(List<AMNavigationDestination> destinations) {
     return destinations.any(_isDestinationSelected);
   }
 
@@ -740,24 +649,18 @@ class _NavigationPanelState extends State<_NavigationPanel> {
       _expandedSections.add('battlefield-glory');
     }
 
-    if (path.startsWith('/royal-office') ||
-        path.startsWith('/admin')) {
+    if (path.startsWith('/royal-office') || path.startsWith('/admin')) {
       _expandedSections.add('royal-office');
     }
 
     if (path.startsWith('/admin')) {
-      _expandedSubgroups.add(
-        'royal-administration',
-      );
-      _expandedSubgroups.add(
-        'royal-control-room',
-      );
+      _expandedSubgroups.add('royal-administration');
+      _expandedSubgroups.add('royal-control-room');
     }
   }
 
   bool _isCastlePath(String path) {
-    return path.startsWith('/member/') ||
-        path.startsWith('/my-castle/');
+    return path.startsWith('/member/') || path.startsWith('/my-castle/');
   }
 
   bool _isCastleOverviewPath(String path) {
@@ -810,12 +713,7 @@ class _NestedNavigationSection extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    icon,
-                    color: isSelected
-                        ? colorScheme.primary
-                        : null,
-                  ),
+                  Icon(icon, color: isSelected ? colorScheme.primary : null),
                   const SizedBox(width: AMSpacing.md),
                   Expanded(
                     child: Text(
@@ -827,13 +725,10 @@ class _NestedNavigationSection extends StatelessWidget {
                   ),
                   AnimatedRotation(
                     turns: isExpanded ? 0.5 : 0,
-                    duration:
-                        const Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 200),
                     child: Icon(
                       Icons.keyboard_arrow_down,
-                      color: isSelected
-                          ? colorScheme.primary
-                          : null,
+                      color: isSelected ? colorScheme.primary : null,
                     ),
                   ),
                 ],
@@ -868,85 +763,60 @@ class _NavigationData {
   _NavigationData({
     required String? memberAmId,
     required bool canAccessAdministration,
-  })  : commandRoom = const AMNavigationDestination(
-          title: 'Command Room',
-          icon: Icons.dashboard_outlined,
-          route: '/command-room',
-        ),
-        allianceHall = const AMNavigationDestination(
-          title: 'Alliance Hall',
-          icon: Icons.groups_outlined,
-          route: '/members',
-        ),
-        castleDestinations = _buildCastleDestinations(
-          memberAmId,
-        ),
-        warRoomDestinations = _buildWarRoomDestinations(
-          canAccessAdministration,
-        ),
-        rankingDestinations =
-            _buildRankingDestinations(),
-        reportDestinations =
-            _buildReportDestinations(),
-        academyDestinations =
-            _buildAcademyDestinations(),
-        notificationDestinations =
-            _buildNotificationDestinations(),
-        battlefieldGloryDestinations =
-            _buildBattlefieldGloryDestinations(),
-        royalOfficeDestinations =
-            _buildRoyalOfficeDestinations(),
-        administrationDestinations =
-            _buildAdministrationDestinations(
-          canAccessAdministration,
-        ),
-        controlRoomDestinations =
-            _buildControlRoomDestinations(
-          canAccessAdministration,
-        );
+  }) : commandRoom = const AMNavigationDestination(
+         title: 'Command Room',
+         icon: Icons.dashboard_outlined,
+         route: '/command-room',
+       ),
+       allianceHall = const AMNavigationDestination(
+         title: 'Alliance Hall',
+         icon: Icons.groups_outlined,
+         route: '/members',
+       ),
+       castleDestinations = _buildCastleDestinations(memberAmId),
+       warRoomDestinations = _buildWarRoomDestinations(canAccessAdministration),
+       rankingDestinations = _buildRankingDestinations(),
+       reportDestinations = _buildReportDestinations(),
+       academyDestinations = _buildAcademyDestinations(),
+       notificationDestinations = _buildNotificationDestinations(),
+       battlefieldGloryDestinations = _buildBattlefieldGloryDestinations(),
+       royalOfficeDestinations = _buildRoyalOfficeDestinations(),
+       administrationDestinations = _buildAdministrationDestinations(
+         canAccessAdministration,
+       ),
+       controlRoomDestinations = _buildControlRoomDestinations(
+         canAccessAdministration,
+       );
 
   final AMNavigationDestination commandRoom;
   final AMNavigationDestination allianceHall;
 
-  final List<AMNavigationDestination>
-      castleDestinations;
+  final List<AMNavigationDestination> castleDestinations;
 
-  final List<AMNavigationDestination>
-      warRoomDestinations;
+  final List<AMNavigationDestination> warRoomDestinations;
 
-  final List<AMNavigationDestination>
-      rankingDestinations;
+  final List<AMNavigationDestination> rankingDestinations;
 
-  final List<AMNavigationDestination>
-      reportDestinations;
+  final List<AMNavigationDestination> reportDestinations;
 
-  final List<AMNavigationDestination>
-      academyDestinations;
+  final List<AMNavigationDestination> academyDestinations;
 
-  final List<AMNavigationDestination>
-      notificationDestinations;
+  final List<AMNavigationDestination> notificationDestinations;
 
-  final List<AMNavigationDestination>
-      battlefieldGloryDestinations;
+  final List<AMNavigationDestination> battlefieldGloryDestinations;
 
-  final List<AMNavigationDestination>
-      royalOfficeDestinations;
+  final List<AMNavigationDestination> royalOfficeDestinations;
 
-  final List<AMNavigationDestination>
-      administrationDestinations;
+  final List<AMNavigationDestination> administrationDestinations;
 
-  final List<AMNavigationDestination>
-      controlRoomDestinations;
+  final List<AMNavigationDestination> controlRoomDestinations;
 
-  static List<AMNavigationDestination>
-      _buildCastleDestinations(
+  static List<AMNavigationDestination> _buildCastleDestinations(
     String? memberAmId,
   ) {
     final hasMember = memberAmId != null;
 
-    final overviewRoute = hasMember
-        ? '/member/$memberAmId'
-        : '/command-room';
+    final overviewRoute = hasMember ? '/member/$memberAmId' : '/command-room';
 
     return [
       AMNavigationDestination(
@@ -958,44 +828,40 @@ class _NavigationData {
       AMNavigationDestination(
         title: 'Beast',
         icon: Icons.pets_outlined,
-        route: hasMember
-            ? '/member/$memberAmId/beast'
-            : '/command-room',
+        route: hasMember ? '/member/$memberAmId/beast' : '/command-room',
         isAvailable: hasMember,
       ),
       AMNavigationDestination(
         title: 'Equipment',
         icon: Icons.shield_outlined,
-        route: hasMember
-            ? '/member/$memberAmId/equipment'
-            : '/command-room',
+        route: hasMember ? '/member/$memberAmId/equipment' : '/command-room',
         isAvailable: hasMember,
       ),
       AMNavigationDestination(
         title: 'Artifacts',
         icon: Icons.diamond_outlined,
-        route: hasMember
-            ? '/member/$memberAmId/artifacts'
-            : '/command-room',
+        route: hasMember ? '/member/$memberAmId/artifacts' : '/command-room',
         isAvailable: hasMember,
       ),
-      const AMNavigationDestination(
+      AMNavigationDestination(
         title: 'Colossus',
         icon: Icons.smart_toy_outlined,
-        route: '/my-castle/colossus',
-        isAvailable: false,
+        route: hasMember ? '/member/$memberAmId/colossus' : '/command-room',
+        isAvailable: hasMember,
       ),
-      const AMNavigationDestination(
+      AMNavigationDestination(
         title: 'Mystic',
         icon: Icons.auto_awesome_outlined,
-        route: '/my-castle/mystic',
-        isAvailable: false,
+        route: hasMember ? '/member/$memberAmId/mystic' : '/command-room',
+        isAvailable: hasMember,
       ),
-      const AMNavigationDestination(
+      AMNavigationDestination(
         title: 'High Tech',
         icon: Icons.account_tree_outlined,
-        route: '/my-castle/high-tech',
-        isAvailable: false,
+        route: hasMember
+            ? '/member/$memberAmId/high-tech'
+            : '/command-room',
+        isAvailable: hasMember,
       ),
       const AMNavigationDestination(
         title: 'Totem',
@@ -1024,8 +890,7 @@ class _NavigationData {
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildWarRoomDestinations(
+  static List<AMNavigationDestination> _buildWarRoomDestinations(
     bool canAccessAdministration,
   ) {
     return [
@@ -1058,76 +923,65 @@ class _NavigationData {
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildRankingDestinations() {
+  static List<AMNavigationDestination> _buildRankingDestinations() {
     return const [
       AMNavigationDestination(
         title: 'Overall Progress',
         icon: Icons.workspace_premium_outlined,
-        route:
-            '/hall-of-heroes/rankings/overall-progress',
+        route: '/hall-of-heroes/rankings/overall-progress',
         isAvailable: false,
       ),
       AMNavigationDestination(
         title: 'Castle Rankings',
         icon: Icons.castle_outlined,
-        route:
-            '/hall-of-heroes/rankings/castle',
+        route: '/hall-of-heroes/rankings/castle',
         isAvailable: false,
       ),
       AMNavigationDestination(
         title: 'Event Rankings',
         icon: Icons.event_available_outlined,
-        route:
-            '/hall-of-heroes/rankings/events',
+        route: '/hall-of-heroes/rankings/events',
         isAvailable: false,
       ),
       AMNavigationDestination(
         title: 'Activity Rankings',
         icon: Icons.local_fire_department_outlined,
-        route:
-            '/hall-of-heroes/rankings/activity',
+        route: '/hall-of-heroes/rankings/activity',
         isAvailable: false,
       ),
       AMNavigationDestination(
         title: 'Achievements • V2',
         icon: Icons.military_tech_outlined,
-        route:
-            '/hall-of-heroes/rankings/achievements',
+        route: '/hall-of-heroes/rankings/achievements',
         isAvailable: false,
       ),
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildReportDestinations() {
+  static List<AMNavigationDestination> _buildReportDestinations() {
     return const [
       AMNavigationDestination(
         title: 'Progress Report',
         icon: Icons.trending_up_outlined,
-        route:
-            '/hall-of-heroes/reports/progress',
+        route: '/hall-of-heroes/reports/progress',
         isAvailable: false,
       ),
       AMNavigationDestination(
         title: 'Activity Report',
         icon: Icons.insights_outlined,
-        route:
-            '/hall-of-heroes/reports/activity',
+        route: '/hall-of-heroes/reports/activity',
         isAvailable: false,
       ),
       AMNavigationDestination(
         title: 'Event Report',
         icon: Icons.event_note_outlined,
-        route:
-            '/hall-of-heroes/reports/events',
+        route: '/hall-of-heroes/reports/events',
         isAvailable: false,
       ),
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildAcademyDestinations() {
+  static List<AMNavigationDestination> _buildAcademyDestinations() {
     return const [
       AMNavigationDestination(
         title: 'Castle Guide',
@@ -1156,8 +1010,7 @@ class _NavigationData {
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildNotificationDestinations() {
+  static List<AMNavigationDestination> _buildNotificationDestinations() {
     return const [
       AMNavigationDestination(
         title: 'Alliance',
@@ -1180,21 +1033,18 @@ class _NavigationData {
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildBattlefieldGloryDestinations() {
+  static List<AMNavigationDestination> _buildBattlefieldGloryDestinations() {
     return const [
       AMNavigationDestination(
         title: 'Alliance Performance',
         icon: Icons.timeline_outlined,
-        route:
-            '/battlefield-glory/alliance-performance',
+        route: '/battlefield-glory/alliance-performance',
         isAvailable: false,
       ),
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildRoyalOfficeDestinations() {
+  static List<AMNavigationDestination> _buildRoyalOfficeDestinations() {
     return const [
       AMNavigationDestination(
         title: 'General',
@@ -1211,8 +1061,7 @@ class _NavigationData {
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildAdministrationDestinations(
+  static List<AMNavigationDestination> _buildAdministrationDestinations(
     bool canAccessAdministration,
   ) {
     return [
@@ -1226,24 +1075,21 @@ class _NavigationData {
       const AMNavigationDestination(
         title: 'Alliance Settings',
         icon: Icons.settings_outlined,
-        route:
-            '/royal-office/administration/alliance-settings',
+        route: '/royal-office/administration/alliance-settings',
         isAvailable: false,
         isAdministration: true,
       ),
       const AMNavigationDestination(
         title: 'Permissions',
         icon: Icons.lock_person_outlined,
-        route:
-            '/royal-office/administration/permissions',
+        route: '/royal-office/administration/permissions',
         isAvailable: false,
         isAdministration: true,
       ),
     ];
   }
 
-  static List<AMNavigationDestination>
-      _buildControlRoomDestinations(
+  static List<AMNavigationDestination> _buildControlRoomDestinations(
     bool canAccessAdministration,
   ) {
     if (!canAccessAdministration) {

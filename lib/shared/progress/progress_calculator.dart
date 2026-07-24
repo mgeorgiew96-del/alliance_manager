@@ -3,9 +3,7 @@ import 'progress_category.dart';
 class ProgressCalculator {
   const ProgressCalculator._();
 
-  static double calculateModuleProgress(
-    List<ProgressCategory> categories,
-  ) {
+  static double calculateModuleProgress(List<ProgressCategory> categories) {
     final trackedCategories = categories.where((category) {
       return category.isTracked && category.weight > 0;
     }).toList();
@@ -36,22 +34,14 @@ class ProgressCalculator {
   }) {
     final totalWeight = categories
         .where((category) => category.isTracked)
-        .fold<double>(
-          0,
-          (sum, category) => sum + category.weight,
-        );
+        .fold<double>(0, (sum, category) => sum + category.weight);
 
     return (totalWeight - expectedTotal).abs() <= tolerance;
   }
 
-  static double totalTrackedCategoryWeight(
-    List<ProgressCategory> categories,
-  ) {
+  static double totalTrackedCategoryWeight(List<ProgressCategory> categories) {
     return categories
         .where((category) => category.isTracked)
-        .fold<double>(
-          0,
-          (sum, category) => sum + category.weight,
-        );
+        .fold<double>(0, (sum, category) => sum + category.weight);
   }
 }

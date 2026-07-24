@@ -1,8 +1,1 @@
-enum BeastSkinType {
-  regular,
-  ice,
-  dark,
-  desert,
-  mecha,
-  dracula,
-}
+enum BeastSkinType { regular, ice, dark, desert, mecha, dracula }

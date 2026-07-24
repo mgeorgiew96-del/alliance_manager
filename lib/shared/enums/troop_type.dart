@@ -1,6 +1,1 @@
-enum TroopType {
-  infantry,
-  cavalry,
-  archer,
-  mage,
-}
+enum TroopType { infantry, cavalry, archer, mage }
